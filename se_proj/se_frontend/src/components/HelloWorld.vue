@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h2>Essential Links</h2>
@@ -9,6 +10,9 @@
       :label="item.label"
       :value="item.value">
     </el-option>
+
+
+
   </el-select>
   <el-row>
     <el-button>默认按钮</el-button>
@@ -19,10 +23,19 @@
     <el-button type="danger">危险按钮</el-button>
   </el-row>
   </div>
+
+  <div class="main-left">
+    <el-menu default-active="/activePublic" class="el-menu-vertical-demo" :router="true">
+    <el-menu-item index="/activePublic" :class="{'isActive': active}">活动发布</el-menu-item>
+    <el-menu-item index="/activeManage" :class="{'isActive': !active}">活动管理</el-menu-item>
+    </el-menu>
+  </div>
+
+  </div>
 </template>
 
 <script>
-
+// for js
 export default {
   name: 'HelloWorld',
   data () {
