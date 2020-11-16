@@ -14,8 +14,8 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="signIn">登录</el-button>
-        <el-button@click="signUp">注册</el-button>
+        <el-button type="signin" @click="signIn">登录</el-button>
+        <el-button type="signup" @click="signUp">注册</el-button>
       </el-form-item>
     
     </el-form>
@@ -26,6 +26,9 @@
 export default {
   data() {
     return {
+      color1: '#409EFF',
+      color2: '#409EFF',
+
       form: {
         username: "",
         password: ""
@@ -66,4 +69,7 @@ export default {
   color: #303133;
   text-align: center;
 }
+.el-button--signin{background: #23C6C8;}
+.el-button--signup{background: #FCB065;}
+
 </style>
