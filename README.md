@@ -9,3 +9,12 @@ for 软件工程项目
 * django，已经做了初始化
 ## 数据库选择
 * 暂定MySQL
+
+
+# 工程运行方法
+安装所需的python包 `pip install django pymysql`
+
+配置数据库连接设置，将`./se_proj/se_proj/config.sample.py`重命名为`config.py`，并在其中写入你的数据库连接配置
+
+运行
+`cd se_proj; python manage.py runserver`
