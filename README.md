@@ -9,3 +9,21 @@ for 软件工程项目
 * django，已经做了初始化
 ## 数据库选择
 * 暂定MySQL
+
+
+# 工程运行方法
+进入工程目录（即`manage.py`所在的目录） `cd se_proj`
+
+安装所需的python包 `pip install django pymysql`
+
+`cp ./se_proj/config.sample.py ./se_proj/config.py` 并在`config.py`中修改你的数据库配置
+
+在mysql中创建你在`config.py`中`NAME`字段写下的database。例如在mysql中运行：`CREATE DATABASE passbase DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
+
+初始化数据库 `python manage.py makemigrations se_backend; python manage.py migrate`
+
+启动服务 `python manage.py runserver`
+
+
+# 后端测试方法
+运行后端测试样例 `python ./se_backend/client.py`
