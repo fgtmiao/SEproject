@@ -77,10 +77,21 @@ export default {
   },
 
   methods: {
+
+    showsuccess(that){
+      that.$notify({
+        title: '登录成功',
+        message: '',
+        type: 'success'
+        });
+      },
+
+
     signIn(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            // alert('submit!');
+            this.$options.methods.showsuccess(this);
             this.$router.push({path:'/mainposts', query:{} })
           } 
           else {
@@ -89,13 +100,7 @@ export default {
           }
         });
     },
-    // showsuccess(){
-    //   this.$notify({
-    //     title: '登录成功',
-    //     message: '这是一条成功的提示消息',
-    //     type: 'success'
-    //     });
-    //   },
+
     signUp(){
       console.log("signup")
       this.$router.push({path:'signup', query:{ test:"asdasd" } })

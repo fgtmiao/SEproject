@@ -1,6 +1,5 @@
 <!--
 Description 图片上传
-
 -->
 <template>
     <div id="imgUploader">

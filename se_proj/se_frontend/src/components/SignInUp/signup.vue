@@ -111,8 +111,8 @@
     methods: {
       showsuccess(that){
       that.$notify({
-        title: '登录成功',
-        message: '这是一条成功的提示消息',
+        title: '注册成功！',
+        message: '',
         type: 'success'
         });
       },
@@ -120,7 +120,7 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             //submmit here！
-            alert('submit!');
+            // alert('submit!');
             this.$options.methods.showsuccess(this);
             this.$router.push('/')
           }

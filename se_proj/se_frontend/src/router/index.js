@@ -5,7 +5,8 @@ import Login from '@/components/SignInUp/login.vue'
 import SignUp from '@/components/SignInUp/signup.vue'
 import UserInfo from '@/components/UserInfo/userinfo_modify.vue'
 import MainPosts from '@/components/PostBrowse/MainPosts.vue'
-
+import PostUpload from '@/components/PostUpload/Upload.vue'
+import PostDetail from '@/components/PostDetail/Post.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -29,6 +30,16 @@ export default new Router({
       path:'/mainposts',
       name:'MainPosts',
       component:MainPosts
+    },
+    {
+      path:'/postupload',
+      name:'Upload',
+      component:PostUpload
+    },
+    {
+      path:'/postDetail',
+      name:'postDetail',
+      component:PostDetail
     }
   ]
 })
