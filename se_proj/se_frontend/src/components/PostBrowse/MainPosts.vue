@@ -1,21 +1,69 @@
 <template>
 <div>
+<!--header父子组件太容易出bug，还是老老实实复制粘贴
+首页分类搜索结果都在这个界面做-->
+
      <div class="allbox">
+    <div class = "mainheader">
+    <!--el-card class = "headercard"  :body-style="{ padding: '30px'}"-->
+  <el-card class = "headercard">
+    <el-divider><span class="headertext">PASS小动物照片分享平台</span></el-divider>
     <div>
       <el-input placeholder="请输入搜索内容" v-model="searchbar.input" autocomplete="off" class="searchClass">
-        <el-button slot="append" icon="el-icon-search" @click="searchF('currentDate')"></el-button>
+        <el-button slot="append" icon="el-icon-search" @click="searchF()"></el-button>
       </el-input>
+    </div>
+
+  </el-card>
+
+<el-menu
+  :default-active="activeIndex2"
+  class="el-menu-demo"
+  mode="horizontal"
+  @select="handleSelect"
+  background-color="#fff"
+  text-color="#000"
+  content="center"
+  active-text-color="#55aaff"
+  padding-bottom="0px"
+  >
+  <el-menu-item index="1"><i class="el-icon-s-home"></i>首页</el-menu-item>
+  <el-submenu index="2">
+    <template slot="title"><i class="el-icon-menu"></i>分类</template>
+    <el-menu-item index="2-1">猫咪</el-menu-item>
+    <el-menu-item index="2-2">刺猬</el-menu-item>
+    <el-submenu index="2-4">
+      <template slot="title">鸟类</template>
+      <el-menu-item index="2-4-1">全部</el-menu-item>
+      <el-menu-item index="2-4-1">喜鹊</el-menu-item>
+      <el-menu-item index="2-4-2">麻雀</el-menu-item>
+      <el-menu-item index="2-4-3">鸳鸯</el-menu-item>
+      <el-menu-item index="2-4-4">天鹅</el-menu-item>
+      <el-menu-item index="2-4-5">其他</el-menu-item>
+    </el-submenu>
+    <el-menu-item index="2-4">鱼</el-menu-item>
+    <el-menu-item index="2-5">其他</el-menu-item>
+    </el-submenu>
+  </el-submenu>
+  <el-menu-item index="3"><i class="el-icon-document"></i>百科</el-menu-item>
+  <el-menu-item index="4"><i class="el-icon-user"></i>我的</el-menu-item>
+</el-menu>
+
     </div>
 
     <!--怎么才能居中？-->
     <div class="CardList">
-    <el-row >
-      <div  v-for="(post,index) in posts" :key='post' @click="postDetail(post.postID)">
-        <el-card class = "Showcard"  :body-style="{ padding: '30px' }"  >
+    <el-row class="cardrow">
+      <div  v-for="(post,index) in posts" :key='post.index' >
+        <el-card class = "Showcard"  :body-style="{ padding:'0px' }"  >
+        <div @click="postDetail(post.postID)">
         <div style="padding: 14px;" >
+        <div class="userHeader">
+            <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+            <span>this is username</span>
+        </div>
             <span class="PostDescription">{{post.postDescrip}}</span>
             <div class="bottom clearfix">
-            <time class="time">{{ currentDate }}</time>
             <!--el-button type="text" class="button">帖子详情</el-button-->
             </div>
         </div>
@@ -23,9 +71,13 @@
 
             <div class="covers" >
                 <!--img :src="img.src" width="90%" class="min" alt=""-->
-                <img class="image" :src="post.images[0].src"/>
+                <li class="imgbox"><img class="image" :src="post.images[0].src"/></li>
             </div>
-
+        <time class="time">{{ currentDate }}</time>
+        <!--icon&location here-->
+        <i class="el-icon-location-information"></i>
+        <i class= "el-icon-picture-outline"></i>
+        </div>
         </el-card>
       </div>
     <!--/el-col-->
@@ -47,11 +99,10 @@ export default {
   data() {
     
     return {
+      activeIndex2: '1',
       currentDate:new Date(),
       searchbar:{
       input: '',
-      select: '',
-      
       },
       posts:[
         {
@@ -95,10 +146,17 @@ export default {
     }
   },
   methods:{
-      searchF(Inp)
+    JumpMainpage(){
+
+    },
+    JumpBaiKe(){
+
+    },
+      searchF()
       {
           //search for
-          console.log(Inp)
+        console.log(this.searchbar.input)
+        
       },
       loadMore(){
 
@@ -111,20 +169,33 @@ export default {
       },
       postDetail(Inp){
         this.$router.push({path:'/postDetail', query:{"postID":Inp} })
-      }
+      },
+      handleSelect(key, keyPath) {
+        console.log(key, keyPath);
+        if(key=="4"){
+          this.$router.push({path:'/userinfo', query:{"userID":"this is userid"} })
+        }
+      } 
   }
 }
 </script>
 
 <style acoped>
+.headercard{
+  padding-top: 30px;
+  border-radius: 0px;
+}
+.headertext{
+  color:#101010;
+  font-size:30px;
+}
 .allbox{
-  background: url("../../assets/bg2.jpg");
-  background-size: cover;
-  background-position: center center;
+  background-image:url("../../assets/bg_new.jpg");
+  background-size: contain;
+  height:100%;
+  background-position: 400px 0px;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  width: 100%;
-  height: 100%;
 
 }
 
@@ -133,6 +204,7 @@ export default {
   border: 1px solid #c5c5c5;
   border-radius: 20px;
   background: #f4f4f4;
+  margin-bottom:10px;
 }
 .searchClass .el-input-group__prepend {
   border: none;
@@ -193,21 +265,40 @@ export default {
 //for card
 
 .CardList{
-  position:center center;
+.cardrow{
+position:center center;
+}  
 }
+
 .Showcard{
-  width: 70%;
+  width: 60%;
   height: 70%;
   margin-top: 13px;
-  position:center;  
 }
-.image {
-    height: 500px;
-    width: auto;
-    position: center;
-    margin: 0 auto;
-    display: block;
+
+.userHeader{
+  
 }
+.imgbox{
+    font-size: 0;
+    vertical-align: middle;
+    justify-content:center;
+    position: center center;
+    display: inline-block;
+    width: 500px;
+    height: 300px;
+    line-height: 240px;
+    text-align: center;
+        // outline: 1px solid #000;
+    margin-bottom:10px
+}
+.imgbox img{
+    max-height: 100%;
+    max-width: 100%;
+    vertical-align: middle;
+
+}
+
 
   .clearfix:before,
   .clearfix:after {

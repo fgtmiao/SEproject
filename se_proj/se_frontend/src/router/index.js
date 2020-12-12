@@ -3,10 +3,15 @@ import Router from 'vue-router'
 // import HelloWorld from '@/components/HelloWorld'
 import Login from '@/components/SignInUp/login.vue'
 import SignUp from '@/components/SignInUp/signup.vue'
-import UserInfo from '@/components/UserInfo/userinfo_modify.vue'
+
 import MainPosts from '@/components/PostBrowse/MainPosts.vue'
 import PostUpload from '@/components/PostUpload/Upload.vue'
 import PostDetail from '@/components/PostDetail/Post.vue'
+
+import UserInfo from "@/components/UserInfo/userinfo_display.vue"
+// import UserInfo from "@/components/UserInfo/test.vue"
+import UserInfoEdit from "@/components/UserInfo/userinfo_modify.vue"
+
 Vue.use(Router)
 
 export default new Router({
@@ -22,11 +27,6 @@ export default new Router({
       component:SignUp
     },
     {
-      path:'/userinfo',
-      name:'UserInfo',
-      component:UserInfo
-    },
-    {
       path:'/mainposts',
       name:'MainPosts',
       component:MainPosts
@@ -40,6 +40,16 @@ export default new Router({
       path:'/postDetail',
       name:'postDetail',
       component:PostDetail
-    }
+    },
+    {
+      path:'/userinfo',
+      name:'UserInfo',
+      component:UserInfo
+    },
+    {
+      path:'/userinfoedit',
+      name:'UserInfoEdit',
+      component:UserInfoEdit
+    },
   ]
 })
