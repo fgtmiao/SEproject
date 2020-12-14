@@ -2,8 +2,7 @@
 <div>
 <!--header here-->
     <div class="allbox">
-    <div class = "mainheader">
-        <!--el-card class = "headercard"  :body-style="{ padding: '30px'}"-->
+    <!--div class = "mainheader">
     <el-card class = "headercard">
         <el-divider><span class="headertext">PASS小动物照片分享平台</span></el-divider>
         <div>
@@ -13,21 +12,56 @@
         </div>
 
     </el-card>
-
-    </div>
-        <div>
+    </div-->
+  <el-page-header @back="goBack" content="发布帖子">
+</el-page-header>
+      <div class ="userInfoCard">
         <el-card>
         <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
         <span>this is username</span>
+        <el-button v-if='ismine' @click='ChangeAvater()'>修改头像</el-button>
         </el-card>
-
-        </div>
-        <!--all post here-->
+      </div>
+        <!--all post here 就直接堆一个他的帖子>
         <div class="cardlist">
         <el-card class="">
-
-        </el-card>
+        </el-card-->
+ 
+  <!--他的帖子-->
+  <span v-if='ismine'>我的帖子</span>
+  <span v-else>TA的帖子</span>
+    <div class="CardList">
+    <el-row class="cardrow">
+      <div  v-for="(post,index) in posts" :key='post.index' >
+        <el-card class = "Showcard"  :body-style="{ padding:'0px' }"  >
+        <div @click="postDetail(post.postID)">
+        <div style="padding: 14px;" >
+        <div class="userHeader">
+            <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+            <span>this is username</span>
         </div>
+            <span class="PostDescription">{{post.postDescrip}}</span>
+            <div class="bottom clearfix">
+            <!--el-button type="text" class="button">帖子详情</el-button-->
+            </div>
+        </div>
+        <!--选择每个帖子预先显示一张图，详情之后再显示其他图-->
+
+            <div class="covers" >
+                <!--img :src="img.src" width="90%" class="min" alt=""-->
+                <li class="imgbox"><img class="image" :src="post.images[0].src"/></li>
+            </div>
+        <time class="time">{{ currentDate }}</time>
+        <!--icon&location here-->
+        <i class="el-icon-location-information"></i>
+        <i class= "el-icon-picture-outline"></i>
+        </div>
+        </el-card>
+      </div>
+    <!--/el-col-->
+    </el-row>
+    </div>
+     </div>
     </div>
 </div>
 </template>
@@ -38,22 +72,46 @@ export default {
   data() {
     
     return {
+      ismine:true,
       activeIndex2: '1',
       currentDate:new Date(),
       searchbar:{
       input: '',
       },
-
+      posts:[
+      {
+        "postID":"123",
+        "postDescrip":"asdadads",
+        "images":[
+          {
+          "src":require('../../assets/Jhin.jpg'),
+          }
+        ]
+        },
+      ]
     }
   },
+  mounted(){
+    this.validateMine();
+  },
   methods:{
+    validateMine(){
+      this.ismine=false;
+    },
       searchF()
       {
           //search for
         console.log(this.searchbar.input)
         
       },
+      goBack(){
 
+      this.$router.go(-1);
+      },
+
+ChangeAvater(){
+  console.log("want to change avater");
+},
 
       handleSelect(key, keyPath) {
         console.log(key, keyPath);
@@ -125,5 +183,15 @@ export default {
 .searchClass:hover .el-icon-search{
   color: #409eff;
   font-size: 16px;
+}
+
+//for user
+.userInfoCard{
+  margin:50px;
+  padding:50px;  
+}
+//for posts
+.minePosts{
+
 }
 </style>

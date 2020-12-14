@@ -10,7 +10,8 @@ import PostDetail from '@/components/PostDetail/Post.vue'
 
 import UserInfo from "@/components/UserInfo/userinfo_display.vue"
 // import UserInfo from "@/components/UserInfo/test.vue"
-import UserInfoEdit from "@/components/UserInfo/userinfo_modify.vue"
+
+import Baike from "@/components/baike/baike.vue"
 
 Vue.use(Router)
 
@@ -46,10 +47,11 @@ export default new Router({
       name:'UserInfo',
       component:UserInfo
     },
+
     {
-      path:'/userinfoedit',
-      name:'UserInfoEdit',
-      component:UserInfoEdit
+      path:'/baike',
+      name:'Baike',
+      component:Baike
     },
   ]
 })

@@ -32,7 +32,7 @@
     <template slot="title"><i class="el-icon-menu"></i>分类</template>
     <el-menu-item index="2-1">猫咪</el-menu-item>
     <el-menu-item index="2-2">刺猬</el-menu-item>
-    <el-submenu index="2-4">
+    <el-submenu index="2-3">
       <template slot="title">鸟类</template>
       <el-menu-item index="2-4-1">全部</el-menu-item>
       <el-menu-item index="2-4-1">喜鹊</el-menu-item>
@@ -45,7 +45,22 @@
     <el-menu-item index="2-5">其他</el-menu-item>
     </el-submenu>
   </el-submenu>
-  <el-menu-item index="3"><i class="el-icon-document"></i>百科</el-menu-item>
+  <!--el-menu-item index="3"><i class="el-icon-document"></i>百科</el-menu-item-->
+    <el-submenu index="3">
+    <template slot="title"><i class="el-icon-menu"></i>百科</template>
+    <el-menu-item index="3-1">猫咪</el-menu-item>
+    <el-menu-item index="3-2">刺猬</el-menu-item>
+    <el-submenu index="3-3">
+      <template slot="title">鸟类</template>
+      <el-menu-item index="3-4-1">喜鹊</el-menu-item>
+      <el-menu-item index="3-4-2">麻雀</el-menu-item>
+      <el-menu-item index="3-4-3">鸳鸯</el-menu-item>
+      <el-menu-item index="3-4-4">天鹅</el-menu-item>
+    </el-submenu>
+    <el-menu-item index="3-4">鱼</el-menu-item>
+    </el-submenu>
+  </el-submenu>
+
   <el-menu-item index="4"><i class="el-icon-user"></i>我的</el-menu-item>
 </el-menu>
 
@@ -171,9 +186,13 @@ export default {
         this.$router.push({path:'/postDetail', query:{"postID":Inp} })
       },
       handleSelect(key, keyPath) {
-        console.log(key, keyPath);
+        console.log(key);
         if(key=="4"){
           this.$router.push({path:'/userinfo', query:{"userID":"this is userid"} })
+        }
+        else if(key[0]=="3")
+        {
+          this.$router.push({path:'/baike', query:{"type":key} })
         }
       } 
   }
