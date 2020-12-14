@@ -1,7 +1,9 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
+    <!--img src="./assets/logo.png"加入组件渲染出口
+    mainjs Appvue routers Login,访问http://localhost:xxxx/#/login即可-->
+    
+    <router-view></router-view>
   </div>
 </template>
 
@@ -18,6 +20,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  // margin-top: 60px;
 }
 </style>

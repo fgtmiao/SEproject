@@ -5,11 +5,12 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-
+import ElImageViewer from "element-ui/packages/image/src/image-viewer";
 Vue.config.productionTip = false
 /* 引入组件包 */
 
 Vue.use(ElementUI)
+Vue.use(ElImageViewer)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

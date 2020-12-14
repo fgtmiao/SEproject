@@ -1,6 +1,8 @@
 # SEproject
 for 软件工程项目
 ## 前端修改
+* 前端本地运行方式：进入se_frontend文件夹，执行命令npm run dev打开浏览器查看对应端口即可，初次运行可能需要npm run install等
+* 前端编写方法：在se_frontend/src/components中添加页面并在se_frontend/router/index.js中添加路由
 * 通过修改se_frontend/src/components下添加vue界面，并在se_frontend/src/router/index.js下修改路由即可导向目标页面，之后在frontend文件夹中执行npm run build（如果初次使用需要npm install安装依赖）检测是否报错后用dist文件夹；
 * 参考https://www.cnblogs.com/zhixi/p/9996832.html执行
 * 前端组件添加手段：npm i element-ui -S；在se_frontend/src/main.js引入UI样式，即import的后两行+vue.use
