@@ -141,7 +141,7 @@
   }
 </script>
 
-<style acoped>
+<style scoped>
 .signup-ruleForm {
   width: 350px;
   margin: 160px auto; /* 上下间距160px，左右自动居中*/

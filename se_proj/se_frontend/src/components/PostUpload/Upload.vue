@@ -84,14 +84,26 @@ export default {
         dialogImgVisible: false,////大图预览框
         hideUploadEdit:false,//图片个数设置 超过5张为true
         options: [{
-          value: 'HTML',
-          label: 'HTML'
+          value: '猫咪',
+          label: '猫咪'
         }, {
-          value: 'CSS',
-          label: 'CSS'
+          value: '刺猬',
+          label: '刺猬'
         }, {
-          value: 'JavaScript',
-          label: 'JavaScript'
+          value: '喜鹊',
+          label: '喜鹊'
+        }, {
+          value: '麻雀',
+          label: '麻雀'
+        }, {
+          value: '鸳鸯',
+          label: '鸳鸯'
+        }, {
+          value: '天鹅',
+          label: '天鹅'
+        }, {
+          value: '鱼',
+          label: '鱼'
         }],
         value: []
       };
@@ -154,5 +166,5 @@ export default {
 }
 </script>
 
-<style acoped>
+<style scoped>
 </style>

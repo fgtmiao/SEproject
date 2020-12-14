@@ -4,7 +4,7 @@
 <el-page-header @back="goBack" content="帖子详情">
 </el-page-header>
 <!--post detail-->
-<div >
+<div>
 <el-card class = "Postcard"  :body-style="{ padding: '30px' }"  >
         <!--发帖人-->
     <div @click="getUserInfo()">
@@ -32,9 +32,6 @@
             </div>
             <el-button>点赞num</el-button>
         </div>
-        <!--九宫格-->
-            <div class="covers" > 
-            </div>
 
 </el-card>
 
@@ -165,7 +162,7 @@ export default {
             {   "id":0,
                 "src":require('../../assets/Jhin.jpg')},
             {   "id":1,
-                "src":require('../../assets/bg2.jpg')},
+                "src":require('../../assets/bg1.jpg')},
             {   "id":2,
                 "src":require('../../assets/Jhin.jpg')},
             {   "id":3,
@@ -358,34 +355,44 @@ export default {
 }
 </script>
 
-<style acoped>
-  .SongList{
-        width: 40%;
-    }
-    .covers{
+<style scoped>
+.SongList{
+    width: 60%;
+    display:table-cell;
+}
+.covers{
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;
-    }
-    .cover{
+        // width:700px;
+}
+.cover{
         display: flex;
         justify-content: center;
         width: 33%;
-        margin: 10px 0;
-    }
-    .min{
+        // height:33%;
+        // width:200px;
+        height:300px;
+        margin: 5px 0px;
+}
+.min{
         border-radius: 10px;
         cursor: zoom-in;
-    }
-    .max{
+}
+.max{
         cursor: zoom-out;
         width: 100%;
-
     }
     
 
-    //for cpmment
-    .my-reply{
+
+.time {
+    font-size: 13px;
+    color: #999;
+  }
+//for cpmment
+
+.my-reply{
     padding:10px;
     background-color:#fafbfc
     }
@@ -399,12 +406,10 @@ export default {
         width:90%;
 
     }
-
-
-    .reply-btn-box
+.reply-btn-box
        { height:25px;
         margin:10px 0;}
-        .reply-btn
+.reply-btn
 {            position:relative;
             margin-right:15px}
 
@@ -423,4 +428,5 @@ export default {
     .reply-box
         {margin:10px 0 0 50px;
         background-color:#efefef}
+
 </style>
