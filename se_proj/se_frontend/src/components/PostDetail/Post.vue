@@ -1,46 +1,45 @@
 <template>
 <div>
+<div>
 <!--header-->
 <el-page-header @back="goBack" content="帖子详情">
 </el-page-header>
 <!--post detail-->
-<div>
+</div>
+
 <el-card class = "Postcard"  :body-style="{ padding: '30px' }"  >
         <!--发帖人-->
     <div @click="getUserInfo()">
       <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" ></el-avatar>
       <span>{{postDetail.user_name}}</span>
     </div>
-        <div style="padding: 14px;" >
-            <span class="PostDescription">{{postDetail.description}}</span>
-
-            <!--imgs here-->
-        <div class="SongList">
-            <div class="covers" :style="{display:MinDisplay}">
-            <div class="cover" v-for="(img,index) in postDetail.images" :key='index'>
-            <el-image :src="img.src" width="90%" class="min" 
-            :preview-src-list="getPreviewImgList(index)"></el-image>
-            </div>
-       </div>
+    <div style="padding: 14px;" >
+      <span class="PostDescription">{{postDetail.description}}</span>
+      <div class="SongList">
+          <!-- 
+          <div class="covers" :style="{display:MinDisplay}">
+          <div class="cover" v-for="(img,index) in postDetail.images" :key='index'>
+          <el-image :src="img.src" width="90%" class="min" :lazy="true"
+          :preview-src-list="getPreviewImgList(index)"></el-image>
+          </div> 
+          -->
+        <div v-for="image in postDetail.images" :key="image.value" class="imgbox"><img class="image" v-bind:src="image"></div>
+      </div>
+    </div>
        <!--div class="max" :style="{display:display}">
             <div @click="ZoomOut"  v-for="(img,index) in postDetail.images" :key='index' :class="[index===ShowIndex?'active':'None']" ><img :src="img.src" width="100%"></div>
         </div-->
-      </div>
-        <div class="bottom clearfix">
-          <p class="pid">#{{postDetail.pid}}</p>
-          <time class="time">{{postDetail.time}}</time>
-          <!--el-button type="text" class="button">帖子详情</el-button-->
-        </div>
-        <el-button>点赞num</el-button>
-      </div>
-
+    <div class="bottom clearfix">
+      <p class="pid">#{{postDetail.pid}}</p>
+      <time class="time">{{postDetail.time}}</time>
+      <!--el-button type="text" class="button">帖子详情</el-button-->
+    <el-button>点赞num</el-button>
+    </div>
 </el-card>
 
-</div>
 <!--comment test here-->
 
- <div>
- <el-card>
+<el-card>
          this is the comment card
         <div @click="inputFocus" class="my-reply">
             <el-avatar class="header-img" :size="40" :src="myHeader"></el-avatar>
@@ -111,10 +110,11 @@
         </div>
     
         </div>
-        </el-card>
-    </div>
+</el-card>
 
 
+
+</div>
 </div>
 </template>
 
@@ -161,25 +161,6 @@ export default {
       MinDisplay:'flex',
       imgSrcList:[],
       postDetail:{
-          // "postID":"this is id",
-          // "postDes":"this is description",
-          // "images":[
-          //     {   "id":0,
-          //         "src":require('../../assets/Jhin.jpg')},
-          //     {   "id":1,
-          //         "src":require('../../assets/bg1.jpg')},
-          //     {   "id":2,
-          //         "src":require('../../assets/Jhin.jpg')},
-          //     {   "id":3,
-          //         "src":require('../../assets/bg2.jpg')},
-          //     {   "id":4,
-          //         "src":require('../../assets/Jhin.jpg')},
-          //     {   "id":5,
-          //         "src":require('../../assets/bg2.jpg')},
-          // ],
-          // "comments":[
-              
-          // ]
       },
 
       //for comment test
@@ -192,42 +173,6 @@ export default {
       to:'',
       toId:-1,
       comments:[
-        // {
-        //   name:'name2',
-        //   id:2,
-        //   headImg:'https://ae01.alicdn.com/kf/Hd60a3f7c06fd47ae85624badd32ce54dv.jpg',
-        //   comment:'comment1',
-        //   time:'time here',
-        //   commentNum:2,
-        //   like:15,
-        //   inputShow:false,
-        //   reply:[
-        //     {
-        //       from:'test',
-        //       fromId:3,
-        //       fromHeadImg:'https://ae01.alicdn.com/kf/H94c78935ffa64e7e977544d19ecebf06L.jpg',
-        //       to:'name1',
-        //       toId:4,
-        //       comment:'comment2',
-        //       time:'timehere2',
-        //       commentNum:1,
-        //       like:15,
-        //       inputShow:false
-        //     },
-        //     {
-        //       from:'name3',
-        //       fromId:1123,
-        //       fromHeadImg:'https://ae01.alicdn.com/kf/Hf6c0b4a7428b4edf866a9fbab75568e6U.jpg',
-        //       to:'name1',
-        //       toId:19870621,
-        //       comment:'comment3',
-        //       time:'timehere3',
-        //       commentNum:0,
-        //       like:5,
-        //       inputShow:false
-        //     }
-        //   ]
-        // },
       ]
     }
   },
@@ -305,7 +250,7 @@ export default {
       this.postDetail.pid = post.pid;
       this.postDetail.description = post.description;
       this.postDetail.images = '';
-      if (post.images_src) this.postDetail.images = post.image_src.split(',');
+      if (post.image_src) this.postDetail.images = post.image_src.split(',');
       this.postDetail.time = new Date(post.timestamp * 1000);
       // 必须用$set才能提醒视图更新内容，不然视图是检测不到data中对象的某个属性发生更新的
       this.$set(this.postDetail, 'user_name', post.user_name);
@@ -334,7 +279,7 @@ export default {
         let arr = []
         let i = 0;
         for(i;i < this.postDetail.images.length;i++){
-            arr.push(this.postDetail.images[i+index].src);
+            arr.push(this.postDetail.images[i+index]);
             if(i+index >= this.postDetail.images.length-1){
             index = 0-(i+1);
             }
@@ -446,6 +391,10 @@ export default {
 .SongList{
     width: 60%;
     display:table-cell;
+}
+
+.SongList div, .image {
+  width: 200px; display: inline-block;
 }
 .covers{
         display: flex;
