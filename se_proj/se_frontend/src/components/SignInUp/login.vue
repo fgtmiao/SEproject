@@ -115,7 +115,7 @@ export default {
 };
 </script>
 
-<style acoped>
+<style scoped>
 
 .signin-ruleForm {
   width: 350px;

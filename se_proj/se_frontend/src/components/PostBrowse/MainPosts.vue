@@ -3,68 +3,68 @@
 <!--header父子组件太容易出bug，还是老老实实复制粘贴
 首页分类搜索结果都在这个界面做-->
 
-     <div class="allbox">
+  <div class="allbox">
     <div class = "mainheader">
     <!--el-card class = "headercard"  :body-style="{ padding: '30px'}"-->
-  <el-card class = "headercard">
-    <el-divider><span class="headertext">PASS小动物照片分享平台</span></el-divider>
-    <div>
-      <el-input placeholder="请输入搜索内容" v-model="searchbar.input" autocomplete="off" class="searchClass">
-        <el-button slot="append" icon="el-icon-search" @click="searchF()"></el-button>
-      </el-input>
-    </div>
+    <el-card class = "headercard">
+      <el-divider><span class="headertext">PASS小动物照片分享平台</span></el-divider>
+      <div>
+        <el-input placeholder="请输入搜索帖子内容" v-model="searchbar.input" autocomplete="off" class="searchClass">
+          <el-button slot="append" icon="el-icon-search" @click="searchF()"></el-button>
+        </el-input>   
+      </div>
+    </el-card>
 
-  </el-card>
+    <el-menu
+      :default-active="activeIndex2"
+      class="el-menu-demo"
+      mode="horizontal"
+      @select="handleSelect"
+      background-color="#fff"
+      text-color="#000"
+      content="center"
+      active-text-color="#55aaff"
+      padding-bottom="0px"
+      >
+      <el-menu-item index="1"><i class="el-icon-s-home"></i>首页</el-menu-item>
+      <el-submenu index="2">
+        <template slot="title"><i class="el-icon-menu"></i>分类</template>
+        <el-menu-item index="2-1">猫咪</el-menu-item>
+        <el-menu-item index="2-2">刺猬</el-menu-item>
+        <el-submenu index="2-3">
+          <template slot="title">鸟类</template>
+          <el-menu-item index="2-4-1">全部</el-menu-item>
+          <el-menu-item index="2-4-1">喜鹊</el-menu-item>
+          <el-menu-item index="2-4-2">麻雀</el-menu-item>
+          <el-menu-item index="2-4-3">鸳鸯</el-menu-item>
+          <el-menu-item index="2-4-4">天鹅</el-menu-item>
+          <el-menu-item index="2-4-5">其他</el-menu-item>
+        </el-submenu>
+        <el-menu-item index="2-4">鱼</el-menu-item>
+        <el-menu-item index="2-5">其他</el-menu-item>
+        </el-submenu>
+      </el-submenu>
+      <!--el-menu-item index="3"><i class="el-icon-document"></i>百科</el-menu-item-->
+        <el-submenu index="3">
+        <template slot="title"><i class="el-icon-menu"></i>百科</template>
+        <el-menu-item index="3-1">猫咪</el-menu-item>
+        <el-menu-item index="3-2">刺猬</el-menu-item>
+        <el-submenu index="3-3">
+          <template slot="title">鸟类</template>
+          <el-menu-item index="3-4-1">喜鹊</el-menu-item>
+          <el-menu-item index="3-4-2">麻雀</el-menu-item>
+          <el-menu-item index="3-4-3">鸳鸯</el-menu-item>
+          <el-menu-item index="3-4-4">天鹅</el-menu-item>
+        </el-submenu>
+        <el-menu-item index="3-4">鱼</el-menu-item>
+        </el-submenu>
+      </el-submenu>
 
-<el-menu
-  :default-active="activeIndex2"
-  class="el-menu-demo"
-  mode="horizontal"
-  @select="handleSelect"
-  background-color="#fff"
-  text-color="#000"
-  content="center"
-  active-text-color="#55aaff"
-  padding-bottom="0px"
-  >
-  <el-menu-item index="1"><i class="el-icon-s-home"></i>首页</el-menu-item>
-  <el-submenu index="2">
-    <template slot="title"><i class="el-icon-menu"></i>分类</template>
-    <el-menu-item index="2-1">猫咪</el-menu-item>
-    <el-menu-item index="2-2">刺猬</el-menu-item>
-    <el-submenu index="2-3">
-      <template slot="title">鸟类</template>
-      <el-menu-item index="2-4-1">全部</el-menu-item>
-      <el-menu-item index="2-4-1">喜鹊</el-menu-item>
-      <el-menu-item index="2-4-2">麻雀</el-menu-item>
-      <el-menu-item index="2-4-3">鸳鸯</el-menu-item>
-      <el-menu-item index="2-4-4">天鹅</el-menu-item>
-      <el-menu-item index="2-4-5">其他</el-menu-item>
-    </el-submenu>
-    <el-menu-item index="2-4">鱼</el-menu-item>
-    <el-menu-item index="2-5">其他</el-menu-item>
-    </el-submenu>
-  </el-submenu>
-  <!--el-menu-item index="3"><i class="el-icon-document"></i>百科</el-menu-item-->
-    <el-submenu index="3">
-    <template slot="title"><i class="el-icon-menu"></i>百科</template>
-    <el-menu-item index="3-1">猫咪</el-menu-item>
-    <el-menu-item index="3-2">刺猬</el-menu-item>
-    <el-submenu index="3-3">
-      <template slot="title">鸟类</template>
-      <el-menu-item index="3-4-1">喜鹊</el-menu-item>
-      <el-menu-item index="3-4-2">麻雀</el-menu-item>
-      <el-menu-item index="3-4-3">鸳鸯</el-menu-item>
-      <el-menu-item index="3-4-4">天鹅</el-menu-item>
-    </el-submenu>
-    <el-menu-item index="3-4">鱼</el-menu-item>
-    </el-submenu>
-  </el-submenu>
+      <el-menu-item index="4"><i class="el-icon-user"></i>我的</el-menu-item>
+      <el-menu-item index="5"><i class="el-icon-circle-plus-outline"></i>发帖</el-menu-item>
+    </el-menu>
 
-  <el-menu-item index="4"><i class="el-icon-user"></i>我的</el-menu-item>
-</el-menu>
-
-    </div>
+  </div>
 
     <!--怎么才能居中？-->
     <div class="CardList">
@@ -101,7 +101,7 @@
     <el-button class="upload" @click="startupload()"> upload</el-button>
 
 
-  <el-backtop >
+  <el-backtop>
   </el-backtop>
 
   </div>
@@ -161,12 +161,7 @@ export default {
     }
   },
   methods:{
-    JumpMainpage(){
 
-    },
-    JumpBaiKe(){
-
-    },
       searchF()
       {
           //search for
@@ -187,8 +182,11 @@ export default {
       },
       handleSelect(key, keyPath) {
         console.log(key);
-        if(key=="4"){
-          this.$router.push({path:'/userinfo', query:{"userID":"this is userid"} })
+        if(key=="5"){
+          this.$router.push({path:'/postupload', query:{"userID":"this is userid","type":key} })
+        }
+        else if(key=="4"){
+          this.$router.push({path:'/userinfo', query:{"userID":"this is userid","type":key} })
         }
         else if(key[0]=="3")
         {
@@ -199,7 +197,7 @@ export default {
 }
 </script>
 
-<style acoped>
+<style scoped>
 .headercard{
   padding-top: 30px;
   border-radius: 0px;
@@ -215,11 +213,9 @@ export default {
   background-position: 400px 0px;
   background-repeat: no-repeat;
   background-attachment: fixed;
-
 }
-
+/*白写了style wrng
 .searchClass{
-  // position:fixed;
   border: 1px solid #c5c5c5;
   border-radius: 20px;
   background: #f4f4f4;
@@ -228,7 +224,7 @@ export default {
 .searchClass .el-input-group__prepend {
   border: none;
   background-color: transparent;
-  // padding: 0 10px 0 30px;
+  padding: 0 10px 0 30px;
 }
 .searchClass .el-input-group__append {
   border: none;
@@ -254,13 +250,14 @@ export default {
   border: 1px solid #D5E3E8;
   background: #fff;
 }
+
 .searchClass:hover .line {
   background-color: #D5E3E8;
 }
 .searchClass:hover .el-icon-search{
   color: #409eff;
   font-size: 16px;
-}
+}*/
 
 
 // for content

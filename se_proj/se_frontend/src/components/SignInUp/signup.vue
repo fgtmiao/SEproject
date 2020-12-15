@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import Qs from 'qs'
+import axios from "axios"
   export default {
     data() {
       var checkUsername = (rule, value, callback) => {
@@ -116,16 +118,53 @@
         type: 'success'
         });
       },
+      showfail(that,msg){
+      that.$notify.error({
+        title: '注册失败',
+        message: msg,
+        });
+      },
       submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            //submmit here！
-            // alert('submit!');
-            this.$options.methods.showsuccess(this);
-            this.$router.push('/')
+        this.$refs[formName].validate((formvalid) => {
+          if (formvalid) {
+              //send post
+          console.log("注册账号和密码为")
+          console.log(this.ruleForm.username)
+          console.log(this.ruleForm.pass)
+          var datas={
+            'type': 'signup',
+            'user_name':this.ruleForm.username,
+            'password':this.ruleForm.pass
+          };
+          var params=Qs.stringify(datas);
+          axios({
+            // url: 'http://8.131.74.16/index',
+            url:'index',
+            method: 'post',
+            data:params//开始回调地狱
+          }).then((res)=>{ 
+          console.log("res from server")
+          console.log(res)
+          if(res.data.succ){
+          this.$options.methods.showsuccess(this);
+          this.$router.push('/mainposts');
+          //cal a token
+          }
+          else{//failed
+
+          }
+        }).catch((error)=>
+        {
+          this.$options.methods.showfail(this,error.data);
+          console.log("error",error)
+        })
+
+
+
+
+
           }
           else {
-            
             console.log('error submit!!');
             return false;
           }
@@ -141,7 +180,7 @@
   }
 </script>
 
-<style acoped>
+<style scoped>
 .signup-ruleForm {
   width: 350px;
   margin: 160px auto; /* 上下间距160px，左右自动居中*/

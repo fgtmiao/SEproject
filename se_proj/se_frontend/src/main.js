@@ -3,11 +3,15 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import axios from 'axios'
+/* 引入组件包 */
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import ElImageViewer from "element-ui/packages/image/src/image-viewer";
 Vue.config.productionTip = false
-/* 引入组件包 */
+//设置axios
+Vue.prototype.$axios = axios
+axios.defaults.baseURL = '/api'//每次发送的请求都会带一个/api的前缀
 
 Vue.use(ElementUI)
 Vue.use(ElImageViewer)
