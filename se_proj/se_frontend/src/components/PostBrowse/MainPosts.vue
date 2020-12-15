@@ -71,13 +71,13 @@
     <el-row class="cardrow">
       <div  v-for="(post,index) in posts" :key='post.index' >
         <el-card class = "Showcard"  :body-style="{ padding:'0px' }"  >
-        <div @click="postDetail(post.postID)">
+        <div @click="postDetail(post.pid)">
         <div style="padding: 14px;" >
         <div class="userHeader">
             <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
-            <span>this is username</span>
+            <span>{{post.user_name}}</span>
         </div>
-            <span class="PostDescription">{{post.postDescrip}}</span>
+            <span class="PostDescription">{{post.description}}</span>
             <div class="bottom clearfix">
             <!--el-button type="text" class="button">帖子详情</el-button-->
             </div>
@@ -86,9 +86,10 @@
 
             <div class="covers" >
                 <!--img :src="img.src" width="90%" class="min" alt=""-->
-                <li class="imgbox"><img class="image" :src="post.images[0].src"/></li>
+                <li class="imgbox"><img class="image" :src="post.images[0]"/></li>
             </div>
-        <time class="time">{{ currentDate }}</time>
+        <p class="pid">#{{post.pid}}</p>
+        <time class="time">{{ post.time }}</time>
         <!--icon&location here-->
         <i class="el-icon-location-information"></i>
         <i class= "el-icon-picture-outline"></i>
@@ -110,57 +111,80 @@
 </template>
 
 <script>
+import Qs from 'qs'
+import axios from "axios"
+
 export default {
   data() {
     
     return {
       activeIndex2: '1',
-      currentDate:new Date(),
       searchbar:{
       input: '',
       },
+      last_viewed_index: -1,    // 默认值为-1，表示还没有开始浏览帖子
       posts:[
-        {
-        "postID":"123",
-        "postDescrip":"asdadads",
-        "images":[
-          {
-          "src":require('../../assets/Jhin.jpg'),
-          }
-        ]
-        },
-        {
-          "postID":"456",
-        "postDescrip":"asdadads",
-        "images":[
-          {
-          "src":require('../../assets/Jhin.jpg'),
-          }
-        ]
-        },
-        {
-          "postID":"789",
-        "postDescrip":"asdadads",
-        "images":[
-          {
-          "src":require('../../assets/bg1.jpg'),
-          }
-        ]
-        },
-        {
-          "postID":"123",
-        "postDescrip":"asdadads",
-        "images":[
-          {
-          "src":require('../../assets/Jhin.jpg'),
-          }
-        ]
-        }
+        // {
+        // "postID":"123",
+        // "postDescrip":"asdadads",
+        // "images":[
+        //   {
+        //   "src":require('../../assets/Jhin.jpg'),
+        //   }
+        // ]
+        // },
+        // {
+        //   "postID":"456",
+        // "postDescrip":"asdadads",
+        // "images":[
+        //   {
+        //   "src":require('../../assets/Jhin.jpg'),
+        //   }
+        // ]
+        // },
+        // {
+        //   "postID":"789",
+        // "postDescrip":"asdadads",
+        // "images":[
+        //   {
+        //   "src":require('../../assets/bg1.jpg'),
+        //   }
+        // ]
+        // },
+        // {
+        //   "postID":"123",
+        // "postDescrip":"asdadads",
+        // "images":[
+        //   {
+        //   "src":require('../../assets/Jhin.jpg'),
+        //   }
+        // ]
+        // }
       ],
 
     }
   },
   methods:{
+      get_posts(start_index, animal_class, position) {
+        var datas = {'type': 'view_posts'};
+        if (start_index > 0) datas['start_index'] = start_index;
+        if (animal_class) datas['animal_class'] = animal_class;
+        if (position) datas['position'] = position;
+        var params = Qs.stringify(datas);
+        console.log(datas, params);
+        axios({url: 'index', method: 'post', data: params}, )
+          .then((res) => {
+            if (res.data.succ) {
+              this.add_posts(res.data.post_info_list);
+            }
+            else {
+              console.log("res_error", res);
+            }
+          })
+          .catch((err) => {
+            console.log("catch_error", err);
+          });
+      },
 
       searchF()
       {
@@ -177,8 +201,8 @@ export default {
       startupload(){
         this.$router.push('/postupload')
       },
-      postDetail(Inp){
-        this.$router.push({path:'/postDetail', query:{"postID":Inp} })
+      postDetail(pid){
+        this.$router.push({path:'/postDetail', query:{"pid": pid} })
       },
       handleSelect(key, keyPath) {
         console.log(key);
@@ -192,8 +216,25 @@ export default {
         {
           this.$router.push({path:'/baike', query:{"type":key} })
         }
-      } 
-  }
+      },
+      add_posts(posts_list) {
+        console.log(posts_list);
+        for (var post of posts_list) {
+          var images_list = '';
+          if (post.image_src) images_list = post.image_src.split(',');
+          this.posts.push({
+            user_name: post.user_name, description: post.description,
+            time: new Date(post.timestamp*1000), images: images_list,
+            pid: post.pid
+          })
+        }
+        console.log(this.posts)
+      }
+  },
+  created: function() {
+    console.log("created!");
+    this.get_posts();
+  },
 }
 </script>
 
@@ -263,6 +304,12 @@ export default {
 // for content
   .line{
     padding :20px
+  }
+  .pid {
+    font-size: 13px;
+    color: #999;
+    position: absolute;
+    left: 10px; bottom: 5px; margin: 0px;
   }
   .time {
     font-size: 13px;
