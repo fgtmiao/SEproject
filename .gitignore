@@ -1,6 +1,10 @@
 # folders
 migrations/
 __pycache__/
+node_modules/
+uwsgi_conf/
 
 # files
+package-lock.json
 config.py
+*.pyc

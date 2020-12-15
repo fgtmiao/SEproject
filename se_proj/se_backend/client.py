@@ -7,7 +7,6 @@ import json
 import base64
 import hmac
 
-
 if __name__ == "__main__":
 
     index_url = 'http://127.0.0.1:8000/index'
@@ -25,12 +24,15 @@ if __name__ == "__main__":
     res = requests.post(url=index_url, data=signup_params)
     print('模拟注册 返回结果: %s' % res.text)
 
-    # 获取本次登录的secret并创建jwt
-    secret_token = json.loads(res.content)['secret']
-    header_text = base64.b64encode(json.dumps({"alg": "HS256", "typ": "JWT"}).encode()).decode()
-    payload_text = base64.b64encode(json.dumps({'lia': user_name}).encode()).decode()       # lia: login as
-    signature_text = base64.b64encode(hmac.new(secret_token.encode(), (header_text + '.' + payload_text).encode(), digestmod='sha256').digest()).decode()
-    jwt = header_text + '.' + payload_text + '.' + signature_text
+    if not json.loads(res.content)['succ']:
+        # 说明帐号可能已经存在了，所以模拟登录
+        signup_params = {
+            'type': 'signin', 'user_name':  user_name, 'password': password
+        }
+        res = requests.post(url=index_url, data=signup_params)
+        print('模拟登录 返回结果: %s' % res.text)
+
+    jwt = json.loads(res.content)['token']
     print('my jwt token: %s' % jwt)
     jwt = jwt.encode()
 
@@ -65,7 +67,14 @@ if __name__ == "__main__":
     res = requests.post(url=index_url, data=post_params)
     print('模拟回复 返回结果: %s' % (res.text))
 
-    # 6. 退出登录
+    # 6. 模拟读取回复
+    post_params = {
+        'type': 'view_replies', 'pid': postid
+    }
+    res = requests.post(url=index_url, data=post_params)
+    print('模拟读取回复 返回结果: %s' % (res.text))
+
+    # 7. 退出登录
     post_params = {
         'type': 'signout', 'jwt': jwt,
     }

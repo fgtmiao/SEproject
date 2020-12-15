@@ -4,6 +4,8 @@ import time
 import random
 import string
 import json
+import hmac
+import base64
 
 import django
 from django.db import models
@@ -11,6 +13,14 @@ from django.http import JsonResponse
 from django.forms.models import model_to_dict
 from django.db.models import F
 from se_backend.models import User, Post, Reply
+
+
+def build_jwt_token(secret, user_name):
+    header_text = base64.b64encode(json.dumps({"alg": "HS256", "typ": "JWT"}).encode()).decode()
+    payload_text = base64.b64encode(json.dumps({'lia': user_name}).encode()).decode()       # lia: login as
+    signature_text = base64.b64encode(hmac.new(secret.encode(), (header_text + '.' + payload_text).encode(), digestmod='sha256').digest()).decode()
+    jwt = header_text + '.' + payload_text + '.' + signature_text
+    return jwt
 
 
 def signin(request):
@@ -31,8 +41,8 @@ def signin(request):
     user.secret_token = secret_token
     user.last_login_time = int(time.time())
     user.save()
-
-    return JsonResponse({'succ': True, 'secret': secret_token})
+    jwt_token = build_jwt_token(secret_token, request.POST.get('user_name'))
+    return JsonResponse({'succ': True, 'token': jwt_token})
 
 
 def signup(request):
@@ -46,6 +56,8 @@ def signup(request):
     print(len(result))
     if len(result) != 0:
         return JsonResponse({'succ': False, 'errmsg': 'user_name already exists'})
+
+    # 添加新用户信息
     user = User()
     user.user_name = request.POST.get('user_name')
     user.password = request.POST.get('password')
@@ -62,6 +74,7 @@ def signout(request, payload):
         [required] jwt: str, base64 encoded json web token
     '''
     user = User.objects.get(user_name=payload['lia'])
+    # 生成一个随机secret覆盖原来的secret
     user.secret_token = ''.join(random.sample(string.ascii_letters + string.digits, 32))
     user.save()
     return JsonResponse({'succ': True})
@@ -97,6 +110,20 @@ def view_posts(request):
         post_dicts.append(model_to_dict(post))
         if len(post_dicts) >= post_num:
             break
+
+    # 将结果中的publisher从uid转换为user_name
+    uid_to_user = dict()
+    uids = set([post_dict['publisher'] for post_dict in post_dicts])
+    for uid in uids:
+        try:
+            publisher_user = User.objects.get(uid=uid)
+            uid_to_user[uid] = {'user_name': publisher_user.user_name, 'user_fig': publisher_user.user_fig_src}
+        except Exception:
+            uid_to_user[uid] = ''
+
+    for i, post_dict in enumerate(post_dicts):
+        post_dicts[i]['user_name'] = uid_to_user[post_dict['publisher']]['user_name']
+        post_dicts[i]['user_fig'] = uid_to_user[post_dict['publisher']]['user_fig']
     return JsonResponse({'succ': True, 'post_info_list': post_dicts})
 
 
@@ -172,3 +199,30 @@ def comment_post(request, payload):
     reply.timestamp = int(time.time())
     reply.save()
     return JsonResponse({'succ': True, 'floor': reply_floor})
+
+
+def view_replies(request):
+    '''
+    POST params:
+        [requried] pid: int, 要查看哪个帖子的回复
+    '''
+    pid = int(request.POST.get('pid', default=-1))
+    reply_query_set = Reply.objects.filter(post=pid)
+    reply_dicts = []
+    for reply in reply_query_set:
+        reply_dicts.append(model_to_dict(reply))
+
+    # 将结果中的publisher从uid转换为user_name
+    uid_to_user = dict()
+    uids = set([reply_dict['publisher'] for reply_dict in reply_dicts])
+    for uid in uids:
+        try:
+            publisher_user = User.objects.get(uid=uid)
+            uid_to_user[uid] = {'user_name': publisher_user.user_name, 'user_fig': publisher_user.user_fig_src}
+        except Exception:
+            uid_to_user[uid] = ''
+
+    for i, reply_dict in enumerate(reply_dicts):
+        reply_dicts[i]['user_name'] = uid_to_user[reply_dict['publisher']]['user_name']
+        reply_dicts[i]['user_fig'] = uid_to_user[reply_dict['publisher']]['user_fig']
+    return JsonResponse({'succ': True, 'post_info_list': reply_dicts})
