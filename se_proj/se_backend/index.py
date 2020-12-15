@@ -1,5 +1,6 @@
 # coding=utf-8
 
+import os
 import time
 import random
 import string
@@ -13,6 +14,10 @@ from django.http import JsonResponse
 from django.forms.models import model_to_dict
 from django.db.models import F
 from se_backend.models import User, Post, Reply
+from se_proj.settings import ALLOWED_HOSTS
+
+
+image_base_folder = '/data/SEproject/images'
 
 
 def build_jwt_token(secret, user_name):
@@ -53,7 +58,6 @@ def signup(request):
     '''
     # 检查用户名是否已经被注册过
     result = User.objects.filter(user_name=request.POST.get('user_name'))
-    print(len(result))
     if len(result) != 0:
         return JsonResponse({'succ': False, 'errmsg': 'user_name already exists'})
 
@@ -122,8 +126,12 @@ def view_posts(request):
             uid_to_user[uid] = ''
 
     for i, post_dict in enumerate(post_dicts):
+        # 添加作者的名称和头像
         post_dicts[i]['user_name'] = uid_to_user[post_dict['publisher']]['user_name']
         post_dicts[i]['user_fig'] = uid_to_user[post_dict['publisher']]['user_fig']
+        # 处理图片url
+        if post_dict['image_src']:
+            post_dicts[i]['image_src'] = ','.join([os.path.join('http://' + ALLOWED_HOSTS[0], 'images', url) for url in post_dict['image_src'].split(',')])
     return JsonResponse({'succ': True, 'post_info_list': post_dicts})
 
 
@@ -133,23 +141,42 @@ def add_post(request, payload):
         [required] jwt: str, base64 encoded json web token
         [required] post: dict
         [required] post[description]: str
-        [optional] post[image_src]: str
+        [optional] post[image]: bin
         [optional] post[animal_class]: str
         [optional] post[position]: str
     '''
 
     description = request.POST.get('post[description]')
-    image_src = request.POST.get('post[image_src]')
     animal_class = request.POST.get('post[animal_class]')
     position = request.POST.get('post[position]')
     publisher = User.objects.get(user_name=payload['lia']).uid
     if not description:
         return JsonResponse({'succ': False, 'errmsg': 'post description required'})
 
+    # 获取并存储图片
+    image_dict = request.FILES.items()
+    if image_dict:
+        image_urls = []
+        for (k, v) in image_dict:
+            image_data = request.FILES.getlist(k)
+            for image in image_data:
+                existed_images = os.listdir(image_base_folder)
+                image_fname = ''.join(random.sample(string.ascii_letters + string.digits, 32)) + '.jpeg'
+                while image_fname in existed_images:
+                    image_fname = ''.join(random.sample(string.ascii_letters + string.digits, 32)) + '.jpeg'  # 生成随机文件名
+                image_fd = open(os.path.join(image_base_folder, image_fname), 'wb')
+                if image.multiple_chunks():
+                    for content in image.chunks():
+                        image_fd.write(content)
+                else:
+                    image_fd.write(image.read())
+                image_urls.append(image_fname)
+    image_urls = ','.join(image_urls)
+
     post = Post()
     post.publisher = publisher
     post.description = description
-    post.image_src = image_src
+    post.image_src = image_urls
     post.animal_class = animal_class
     post.position = position
     post.timestamp = int(time.time())
