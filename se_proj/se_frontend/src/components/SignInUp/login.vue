@@ -19,7 +19,9 @@
 
   </div>
 </template>
-  <script>
+<script>
+import Qs from 'qs'
+import axios from 'axios'
 export default {
   data() {
       var checkUsername = (rule, value, callback) => {
@@ -85,14 +87,50 @@ export default {
         type: 'success'
         });
       },
-
+      showfail(that,msg){
+      that.$notify.error({
+        title: '登录失败',
+        message: msg,
+        });
+      },
 
     signIn(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            // alert('submit!');
+            //            
+            var datas={
+              'type': 'signin',
+              'user_name':this.ruleForm.username,
+              'password':this.ruleForm.pass
+            };
+            var params=Qs.stringify(datas);
+            let _this = this;
+            axios({
+              // url: 'http://8.131.74.16/index',
+              url:'index',
+              method: 'post',
+              data:params//开始回调地狱
+            }).then((res)=>{ 
+            console.log("res from server")
+            console.log(res)
+            if(res.data.succ){
+            //本地保存token
+            // this.userToken=res.data.token;
+            // console.log(this.userToken)
+            localStorage.setItem('token',res.data.token);
+            console.log(localStorage.getItem('token'));
             this.$options.methods.showsuccess(this);
-            this.$router.push({path:'/mainposts', query:{} })
+            this.$router.push('/mainposts');
+            }
+            else{//fail 错误
+              this.$options.methods.showfail(this,"用户名或密码错误！");
+              console.log(res.data.errmsg)
+            }
+            }).catch((error)=>
+            {
+              this.$options.methods.showfail(this,"网络错误");
+              console.log("error",error)
+            })
           } 
           else {
             console.log('error submit!!');
