@@ -190,7 +190,7 @@ export default {
       {
           //search for
         console.log(this.searchbar.input)
-        
+        console.log(localStorage.getItem('token'));
       },
       loadMore(){
 

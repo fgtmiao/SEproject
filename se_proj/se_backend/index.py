@@ -225,4 +225,4 @@ def view_replies(request):
     for i, reply_dict in enumerate(reply_dicts):
         reply_dicts[i]['user_name'] = uid_to_user[reply_dict['publisher']]['user_name']
         reply_dicts[i]['user_fig'] = uid_to_user[reply_dict['publisher']]['user_fig']
-    return JsonResponse({'succ': True, 'post_info_list': reply_dicts})
+    return JsonResponse({'succ': True, 'reply_info_list': reply_dicts})

@@ -126,42 +126,45 @@ import axios from "axios"
       },
       submitForm(formName) {
         this.$refs[formName].validate((formvalid) => {
-          if (formvalid) {
+          if (formvalid) 
+          {
               //send post
-          console.log("注册账号和密码为")
-          console.log(this.ruleForm.username)
-          console.log(this.ruleForm.pass)
-          var datas={
-            'type': 'signup',
-            'user_name':this.ruleForm.username,
-            'password':this.ruleForm.pass
-          };
-          var params=Qs.stringify(datas);
-          axios({
-            // url: 'http://8.131.74.16/index',
-            url:'index',
-            method: 'post',
-            data:params//开始回调地狱
-          }).then((res)=>{ 
-          console.log("res from server")
-          console.log(res)
-          if(res.data.succ){
-          this.$options.methods.showsuccess(this);
-          this.$router.push('/mainposts');
-          //cal a token
-          }
-          else{//failed
-
-          }
-        }).catch((error)=>
-        {
-          this.$options.methods.showfail(this,error.data);
-          console.log("error",error)
-        })
-
-
-
-
+            console.log("注册账号和密码为")
+            console.log(this.ruleForm.username)
+            console.log(this.ruleForm.pass)
+            var datas={
+              'type': 'signup',
+              'user_name':this.ruleForm.username,
+              'password':this.ruleForm.pass
+            };
+            var params=Qs.stringify(datas);
+            let _this = this;
+            axios({
+              // url: 'http://8.131.74.16/index',
+              url:'index',
+              method: 'post',
+              data:params//开始回调地狱
+            }).then((res)=>{ 
+            console.log("res from server")
+            console.log(res)
+            if(res.data.succ){
+            //本地保存token
+            // _this.userToken=res.data.token;
+            // console.log(_this.userToken)
+            localStorage.setItem('token',res.data.token);
+            console.log(localStorage.getItem('token'));
+            this.$options.methods.showsuccess(this);
+            this.$router.push('/mainposts');
+            }
+            else{//failed用户名重复
+              this.$options.methods.showfail(this,"用户名已存在");
+              console.log(res.data.errmsg)
+            }
+            }).catch((error)=>
+            {
+              this.$options.methods.showfail(this,"网络错误");
+              console.log("error",error)
+            })
 
           }
           else {
