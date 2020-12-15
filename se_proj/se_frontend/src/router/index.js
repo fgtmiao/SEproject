@@ -30,27 +30,42 @@ export default new Router({
     {
       path:'/mainposts',
       name:'MainPosts',
+      meta: {
+        requireauth: true, // 判断是否需要登录
+      },
       component:MainPosts
     },
     {
       path:'/postupload',
       name:'Upload',
+      meta: {
+        requireauth: true, // 判断是否需要登录
+       },
       component:PostUpload
     },
     {
       path:'/postDetail',
       name:'postDetail',
+      meta: {
+        requireauth: true, // 判断是否需要登录
+       },
       component:PostDetail
     },
     {
       path:'/userinfo',
       name:'UserInfo',
+      meta: {
+        requireauth: true, // 判断是否需要登录
+       },
       component:UserInfo
     },
 
     {
       path:'/baike',
       name:'Baike',
+      meta: {
+        requireauth: true, // 判断是否需要登录
+       },
       component:Baike
     },
   ]
