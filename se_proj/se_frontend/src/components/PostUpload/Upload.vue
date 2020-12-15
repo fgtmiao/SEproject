@@ -76,6 +76,9 @@
 
 
 <script>
+import Qs from 'qs'
+import axios from "axios"
+
 export default {
     
   data(){
@@ -164,6 +167,36 @@ export default {
     submit() {
       console.log(this.description);
       console.log(this.value);
+      if (!this.description) {
+        this.$message({
+          showClose: true,
+          type:'warning',
+          message:'帖子正文不能为空'
+        });
+      } else {
+        var datas = {
+          'type': 'add_post', 'jwt': localStorage.getItem('token'),
+          'post[description]': this.description
+        }
+        var params = Qs.stringify(datas);
+        console.log(datas, params);
+        axios({url: 'index', method: 'post', data: params}, )
+          .then((res) => {
+            if (res.data.succ) {
+              console.log('succ', res.data);
+              this.$notify({
+                type:'success',
+                title:'帖子发布成功'
+              });
+            }
+            else {
+              console.log("res_error", res);
+            }
+          })
+          .catch((err) => {
+            console.log("catch_error", err);
+          });
+      }
     }
   }
 }

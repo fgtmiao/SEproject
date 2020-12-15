@@ -46,6 +46,7 @@
             <el-avatar class="header-img" :size="40" :src="myHeader"></el-avatar>
             <div class="reply-info" >
                 <div 
+                v-model="replyComment"
                 tabindex="0" 
                 contenteditable="true" 
                 id="replyInput" 
@@ -58,14 +59,14 @@
                 </div>
             </div>
             <div class="reply-btn-box" v-show="btnShow">
-                <el-button class="reply-btn" size="medium" @click="sendComment" type="primary">发表评论</el-button>
+                <el-button class="reply-btn" size="medium" @click="send_comment" type="primary">发表评论</el-button>
             </div>
         </div>
         
         <div v-for="(item,i) in comments" :key="i" class="author-title reply-father">
             <el-avatar class="header-img" :size="40" :src="item.headImg"></el-avatar>
             <div class="author-info">
-                <span class="author-name">{{item.name}}</span>
+                <span class="author-name">{{item.user_name}}</span>
                 <span class="author-time">{{item.time}}</span>
             </div>
             <div class="icon-btn">
@@ -269,6 +270,37 @@ export default {
         });
     },
 
+    send_comment(){
+        if (!this.replyComment) {
+          this.$message({
+            showClose: true,
+            type:'warning',
+            message:'评论不能为空'
+          })
+        } else {
+          var datas = {
+            'type': 'comment_post', 'jwt': localStorage.getItem('token'),
+            'reply': {'post': this.$route.query.pid, 'description': this.replyComment} 
+          };
+          // var params = datas;
+          var params = Qs.stringify(datas);
+          console.log(datas, params);
+          axios({url: 'index', method: 'post', data: params}, )
+            .then((res) => {
+              if (res.data.succ) {
+                console.log('succ', res.data);
+                this.get_replies(this.$route.query.pid);
+              }
+              else {
+                console.log("res_error", res);
+              }
+            })
+            .catch((err) => {
+              console.log("catch_error", err);
+            });
+        }
+    },
+
     set_postDetail(post) {
       this.postDetail.pid = post.pid;
       this.postDetail.description = post.description;
@@ -343,30 +375,6 @@ export default {
 
     _inputShow(i){
         return this.comments[i].inputShow 
-    },
-
-    sendComment(){
-        if(!this.replyComment){
-            this.$message({
-                showClose: true,
-                type:'warning',
-                message:'评论不能为空'
-            })
-        }else{
-            let a ={}
-            let input =  document.getElementById('replyInput')
-            let timeNow = new Date().getTime();
-            let time= this.dateStr(timeNow);
-            a.name= this.myName
-            a.comment =this.replyComment
-            a.headImg = this.myHeader
-            a.time = time
-            a.commentNum = 0
-            a.like = 0
-            this.comments.push(a)
-            this.replyComment = ''
-            input.innerHTML = '';
-        }
     },
 
     sendCommentReply(i,j){
