@@ -32,6 +32,9 @@ def requset_index(request):
     elif request.POST['type'] == 'view_posts':
         return index.view_posts(request)
 
+    elif request.POST['type'] == 'view_replies':
+        return index.view_replies(request)
+
     elif request.POST['type'] == 'add_post':
         payload = verify_jwt(request.POST['jwt'])
         if payload:
