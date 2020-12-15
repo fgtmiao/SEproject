@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # 2. 模拟发帖
     post_params = {
         'type': 'add_post', 'jwt': jwt,
-        'post': json.dumps({'description': '创世帖'})
+        'post[description]': '创世帖'
     }
     res = requests.post(url=index_url, data=post_params)
     print('模拟发帖 返回结果: %s' % res.text)

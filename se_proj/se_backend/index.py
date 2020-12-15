@@ -132,20 +132,16 @@ def add_post(request, payload):
     POST params:
         [required] jwt: str, base64 encoded json web token
         [required] post: dict
-        [required] post.description: str
-        [optional] post.image_src: str
-        [optional] post.animal_class: str
-        [optional] post.position: str
+        [required] post[description]: str
+        [optional] post[image_src]: str
+        [optional] post[animal_class]: str
+        [optional] post[position]: str
     '''
-    post_json = request.POST.get('post')
-    if not post_json:
-        return JsonResponse({'succ': False, 'errmsg': 'post required'})
-    post_dict = json.loads(post_json)
 
-    description = post_dict.get('description')
-    image_src = post_dict.get('image_src')
-    animal_class = post_dict.get('animal_class')
-    position = post_dict.get('position')
+    description = request.POST.get('post[description]')
+    image_src = request.POST.get('post[image_src]')
+    animal_class = request.POST.get('post[animal_class]')
+    position = request.POST.get('post[position]')
     publisher = User.objects.get(user_name=payload['lia']).uid
     if not description:
         return JsonResponse({'succ': False, 'errmsg': 'post description required'})
@@ -166,18 +162,15 @@ def comment_post(request, payload):
     POST params:
         [required] jwt: str, basr64 encoded json web token
         [required] reply: dict
-        [required] reply.post: int, 要回复的帖子的pid
-        [required] reply.description: str
-        [optional] reply.image_src: str
+        [required] reply[post]: int, 要回复的帖子的pid
+        [required] reply[description]: str
+        [optional] reply[image_src]: str
     '''
-    reply_json = request.POST.get('reply')
-    if not reply_json:
-        return JsonResponse({'succ': False, 'errmsg': 'reply required'})
-    reply_dict = json.loads(reply_json)
 
-    pid = reply_dict.get('post')
-    description = reply_dict.get('description')
-    image_src = reply_dict.get('image_src')
+    pid = request.POST.get('reply[post]')
+    description = request.POST.get('reply[description]')
+    image_src = request.POST.get('reply[image_src]')
+
     publisher = User.objects.get(user_name=payload['lia']).uid
     if not description:
         return JsonResponse({'succ': False, 'errmsg': 'reply description required'})
