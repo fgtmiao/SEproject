@@ -20,7 +20,7 @@ Vue.use(ElImageViewer)
 /*路由守卫*/
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requireauth)){ // 判断该路由是否需要登录权限
-   console.log('需要登录');
+  //  console.log('需要登录');
    if (localStorage.token) { //登录存入的token是否存在，为啥一直有token啊
     next();
    }

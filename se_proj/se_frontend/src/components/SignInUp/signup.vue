@@ -152,6 +152,8 @@ import axios from "axios"
             // _this.userToken=res.data.token;
             // console.log(_this.userToken)
             localStorage.setItem('token',res.data.token);
+            localStorage.setItem('tmp_username',this.ruleForm.username);
+
             console.log(localStorage.getItem('token'));
             this.$options.methods.showsuccess(this);
             this.$router.push('/mainposts');

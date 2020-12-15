@@ -345,7 +345,7 @@ export default {
 
     getUserInfo()
     {
-        this.$router.push({path:'/userinfo', query:{} })//tmp user id
+        this.$router.push({path:'/userinfo', query:{"username":this.postDetail.user_name} })//tmp user id
     },
 
     inputFocus(){

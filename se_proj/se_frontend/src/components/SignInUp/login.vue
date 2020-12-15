@@ -119,6 +119,8 @@ export default {
             // console.log(this.userToken)
             localStorage.setItem('token',res.data.token);
             console.log(localStorage.getItem('token'));
+            localStorage.setItem('tmp_username',this.ruleForm.username);
+            
             this.$options.methods.showsuccess(this);
             this.$router.push('/mainposts');
             }

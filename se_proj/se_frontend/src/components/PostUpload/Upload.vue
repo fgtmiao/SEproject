@@ -13,7 +13,7 @@
   placeholder="请输入内容"
   v-model="description">
 </el-input>
-    <div class="uploadIMG uploadSty"  v-if="dialogTitle!=='查看'">
+    <div class="uploadIMG uploadSty">
         <el-upload
                                     action="#"
                                     ref="upload"
@@ -26,13 +26,16 @@
                                     :limit="9"
                                     :on-change="OnChange"
                                     :on-remove="handleRemove"
+                                    :on-exceed="handleExceed"
                                     :class="{disUoloadSty:hideUploadEdit}"
                                    >
                                     <i slot="default" class="el-icon-plus"></i>
         </el-upload>
         <p>注：最多上传9张图片</p>
     </div>
-    <div class="uploadIMG uploadSty"  v-if="dialogTitle=='查看'" >
+
+
+    <!--div class="uploadIMG uploadSty"  v-if="dialogTitle=='查看'" >
         <div class="demo-image__preview">
                                 <el-image v-if="previewList.length==0">
                                         <div slot="error" class="image-slot">
@@ -41,8 +44,9 @@
                                 </el-image>
         <el-image v-else class="elImageSty" v-for="(item,index) in previewList" :src="item"  :key="index" fit="contain" lazy :preview-src-list="getPreviewImgList(index)"></el-image>
         </div>
-    </div>
+    </div-->
 </div>
+
 
   <el-select
     v-model="value"
@@ -84,8 +88,10 @@ export default {
   data(){
       return{
         description: '',
+        dialogImageUrl:'',
         dialogImgVisible: false,////大图预览框
-        hideUploadEdit:false,//图片个数设置 超过5张为true
+        hideUploadEdit:false,//图片个数设置 超过9张为true
+        fileLists:[],//array for images
         options: [{
           value: '猫咪',
           label: '猫咪'
@@ -135,7 +141,8 @@ export default {
         });
       }
       this.fileLists.push(file)
-      this.hideUploadEdit = fileList.length >= 5
+      this.hideUploadEdit = fileList.length >= 9
+      console.log(this.fileLists)
       return (extension || extension2 || extension3)  && isLt2M;
     },
     handlePictureCardPreview(file){
@@ -149,10 +156,18 @@ export default {
     },
 //修改-删除图片
     handleRemove(file, fileList) {
-      var _this = this
-      _this.fileLists = fileList
-      _this.hideUploadEdit = fileList.length >= 5
+      var _this = this;
+      _this.fileLists = fileList;//确定删除了？
+      _this.hideUploadEdit = fileList.length >= 9
     },
+    handleExceed(files, fileList){
+        this.$notify({
+          title: '警告',
+          message: '图片数目超出限制！',
+          type: 'warning'
+        });
+    },
+    // for preview
     getPreviewImgList:function(index) {
       let arr = []
       let i = 0;
@@ -174,13 +189,33 @@ export default {
           message:'帖子正文不能为空'
         });
       } else {
-        var datas = {
-          'type': 'add_post', 'jwt': localStorage.getItem('token'),
-          'post[description]': this.description
+        //整理图片
+        // const imageFD = new FormData();
+        // console.log( this.fileLists)
+        // for(let i = 0; i < this.fileLists.length; i++) {
+        //     imageFD.append('image', this.fileLists[i].raw,this.fileLists[i].uid);
+        // }
+
+        //构建上传
+        // var datas = {
+        //   'type': 'add_post', 
+        //   'jwt': localStorage.getItem('token'),
+        //   'post[description]': this.description,
+        //   //images here
+        //   "imageFD": imageFD,
+        // }
+        const UploadFD = new FormData();
+        UploadFD.append('type','add_post');
+        UploadFD.append('jwt',localStorage.getItem('token'));
+        UploadFD.append('post[description]',this.description);
+        for(let i = 0; i < this.fileLists.length; i++) {
+            UploadFD.append('image', this.fileLists[i].raw,this.fileLists[i].uid);
         }
-        var params = Qs.stringify(datas);
-        console.log(datas, params);
-        axios({url: 'index', method: 'post', data: params}, )
+        // console.log(datas['imageFD'].getAll('image'))//用这种方法显示
+        // var params = Qs.stringify(datas);
+        // console.log("dataparames",datas, params);
+        //再加一层对images的upload回调
+        axios({url: 'index', method: 'post', data: UploadFD}, )
           .then((res) => {
             if (res.data.succ) {
               console.log('succ', res.data);
@@ -188,6 +223,8 @@ export default {
                 type:'success',
                 title:'帖子发布成功'
               });
+              //跳转到主页面
+              this.$router.push('/mainposts');
             }
             else {
               console.log("res_error", res);

@@ -18,7 +18,8 @@
       <div class ="userInfoCard">
         <el-card>
         <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
-        <span>this is username</span>
+        <span>{{tmp_username}}</span>
+
         <el-button v-if='ismine' @click='ChangeAvater()'>修改头像</el-button>
         </el-card>
       </div>
@@ -72,6 +73,7 @@ export default {
     
     return {
       ismine:true,
+      tmp_username:localStorage.getItem('tmp_username'),
       activeIndex2: '1',
       currentDate:new Date(),
       searchbar:{
@@ -95,7 +97,12 @@ export default {
   },
   methods:{
     validateMine(){
-      this.ismine=false;
+      //test 同一个人
+      // this.ismine=false;
+      const tmp_username=localStorage.getItem('tmp_username');
+      const fromname = this.$route.query.username;
+      this.ismine = (tmp_username==fromname);
+      this.tmp_username = fromname;
     },
       searchF()
       {
@@ -114,12 +121,6 @@ export default {
     console.log("want to change avater");
     },
 
-      handleSelect(key, keyPath) {
-        console.log(key, keyPath);
-        if(key=="4"){
-          this.$router.push({path:'/userinfo', query:{"userID":"this is userid"} })
-        }
-      } 
   }
 }
 </script>

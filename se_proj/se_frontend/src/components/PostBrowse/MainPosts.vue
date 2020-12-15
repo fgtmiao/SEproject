@@ -99,7 +99,7 @@
     <!--/el-col-->
     </el-row>
     </div>
-    <el-button class="upload" @click="startupload()"> upload</el-button>
+    <!--el-button class="upload" @click="startupload()"> upload</el-button-->
 
 
   <el-backtop>
@@ -207,10 +207,10 @@ export default {
       handleSelect(key, keyPath) {
         console.log(key);
         if(key=="5"){
-          this.$router.push({path:'/postupload', query:{"userID":"this is userid","type":key} })
+          this.$router.push({path:'/postupload', query:{"username":"this is userid","type":key} })
         }
         else if(key=="4"){
-          this.$router.push({path:'/userinfo', query:{"userID":"this is userid","type":key} })
+          this.$router.push({path:'/userinfo', query:{"username":localStorage.getItem('tmp_username'),"type":key} })
         }
         else if(key[0]=="3")
         {
