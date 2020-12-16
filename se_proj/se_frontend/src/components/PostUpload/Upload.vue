@@ -209,7 +209,7 @@ export default {
         UploadFD.append('jwt',localStorage.getItem('token'));
         UploadFD.append('post[description]',this.description);
         for(let i = 0; i < this.fileLists.length; i++) {
-            UploadFD.append('image', this.fileLists[i].raw,this.fileLists[i].uid);
+            UploadFD.append('post[image]', this.fileLists[i].raw,this.fileLists[i].uid);
         }
         // console.log(datas['imageFD'].getAll('image'))//用这种方法显示
         // var params = Qs.stringify(datas);

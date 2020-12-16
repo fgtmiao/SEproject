@@ -1,46 +1,43 @@
 <template>
 <div>
+
+<div>
 <!--header-->
 <el-page-header @back="goBack" content="帖子详情">
 </el-page-header>
 <!--post detail-->
-<div>
+</div>
+
 <el-card class = "Postcard"  :body-style="{ padding: '30px' }"  >
-        <!--发帖人-->
     <div @click="getUserInfo()">
       <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" ></el-avatar>
       <span>{{postDetail.user_name}}</span>
     </div>
-        <div style="padding: 14px;" >
-            <span class="PostDescription">{{postDetail.description}}</span>
 
-            <!--imgs here-->
-        <div class="SongList">
-            <div class="covers" :style="{display:MinDisplay}">
-            <div class="cover" v-for="(img,index) in postDetail.images" :key='index'>
-            <el-image :src="img.src" width="90%" class="min" 
-            :preview-src-list="getPreviewImgList(index)"></el-image>
-            </div>
-       </div>
-       <!--div class="max" :style="{display:display}">
-            <div @click="ZoomOut"  v-for="(img,index) in postDetail.images" :key='index' :class="[index===ShowIndex?'active':'None']" ><img :src="img.src" width="100%"></div>
-        </div-->
-      </div>
-        <div class="bottom clearfix">
-          <p class="pid">#{{postDetail.pid}}</p>
-          <time class="time">{{postDetail.time}}</time>
-          <!--el-button type="text" class="button">帖子详情</el-button-->
+    <div style="padding: 14px;" >
+      <span class="PostDescription">{{postDetail.description}}</span>
+      <div class="SongList">
+        <div class="covers" :style="{display:MinDisplay}">
+        <div class="cover" v-for="(img,index) in postDetail.images" :key='index'>
+        <el-image :src="img" width="90%" class="min" :lazy="true"
+          :preview-src-list="getPreviewImgList(index)"></el-image>
+        </div> 
+        <!--div v-for="image in postDetail.images" :key="image.value" class="imgbox"><img class="image" v-bind:src="image"></div-->
         </div>
-        <el-button>点赞num</el-button>
       </div>
+    </div>
 
+    <div class="bottom clearfix">
+      <p class="pid">#{{postDetail.pid}}</p>
+      <time class="time">{{postDetail.time}}</time>
+      <!--el-button type="text" class="button">帖子详情</el-button-->
+    <el-button>点赞num</el-button>
+    </div>
 </el-card>
 
-</div>
 <!--comment test here-->
 
- <div>
- <el-card>
+<el-card>
          this is the comment card
         <div @click="inputFocus" class="my-reply">
             <el-avatar class="header-img" :size="40" :src="myHeader"></el-avatar>
@@ -111,10 +108,11 @@
         </div>
     
         </div>
-        </el-card>
-    </div>
+</el-card>
 
 
+
+</div>
 </div>
 </template>
 
@@ -124,62 +122,16 @@ import Qs from 'qs'
 import axios from "axios"
 
 export default {
-    //for comment
 
-// const clickoutside = {
-//     // 初始化指令
-//     bind(el, binding, vnode) {
-//     function documentHandler(e) {
-//     // 这里判断点击的元素是否是本身，是本身，则返回
-//         if (el.contains(e.target)) {
-//             return false;
-//         }
-//     // 判断指令中是否绑定了函数
-//         if (binding.expression) {
-//             // 如果绑定了函数 则调用那个函数，此处binding.value就是handleClose方法
-//             binding.value(e);
-//         }
-//     }
-//     // 给当前元素绑定个私有变量，方便在unbind中可以解除事件监听
-//     el.vueClickOutside = documentHandler;
-//     document.addEventListener('click', documentHandler);
-//     },
-//     update() {},
-//     unbind(el, binding) {
-//     // 解除事件监听
-//     document.removeEventListener('click', el.vueClickOutside);
-//     delete el.vueClickOutside;
-//   },
-// };
 
 
   data() {
-    name:'This is ArticleComment';
     return {
       ShowIndex:0,
       display: 'none',
       MinDisplay:'flex',
       imgSrcList:[],
       postDetail:{
-          // "postID":"this is id",
-          // "postDes":"this is description",
-          // "images":[
-          //     {   "id":0,
-          //         "src":require('../../assets/Jhin.jpg')},
-          //     {   "id":1,
-          //         "src":require('../../assets/bg1.jpg')},
-          //     {   "id":2,
-          //         "src":require('../../assets/Jhin.jpg')},
-          //     {   "id":3,
-          //         "src":require('../../assets/bg2.jpg')},
-          //     {   "id":4,
-          //         "src":require('../../assets/Jhin.jpg')},
-          //     {   "id":5,
-          //         "src":require('../../assets/bg2.jpg')},
-          // ],
-          // "comments":[
-              
-          // ]
       },
 
       //for comment test
@@ -187,47 +139,11 @@ export default {
       index:'0',
       replyComment:'',
       myName:'name1',
-      myHeader:'https://ae01.alicdn.com/kf/Hd60a3f7c06fd47ae85624badd32ce54dv.jpg',
+      myHeader:'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
       myId:1,
       to:'',
       toId:-1,
       comments:[
-        // {
-        //   name:'name2',
-        //   id:2,
-        //   headImg:'https://ae01.alicdn.com/kf/Hd60a3f7c06fd47ae85624badd32ce54dv.jpg',
-        //   comment:'comment1',
-        //   time:'time here',
-        //   commentNum:2,
-        //   like:15,
-        //   inputShow:false,
-        //   reply:[
-        //     {
-        //       from:'test',
-        //       fromId:3,
-        //       fromHeadImg:'https://ae01.alicdn.com/kf/H94c78935ffa64e7e977544d19ecebf06L.jpg',
-        //       to:'name1',
-        //       toId:4,
-        //       comment:'comment2',
-        //       time:'timehere2',
-        //       commentNum:1,
-        //       like:15,
-        //       inputShow:false
-        //     },
-        //     {
-        //       from:'name3',
-        //       fromId:1123,
-        //       fromHeadImg:'https://ae01.alicdn.com/kf/Hf6c0b4a7428b4edf866a9fbab75568e6U.jpg',
-        //       to:'name1',
-        //       toId:19870621,
-        //       comment:'comment3',
-        //       time:'timehere3',
-        //       commentNum:0,
-        //       like:5,
-        //       inputShow:false
-        //     }
-        //   ]
-        // },
       ]
     }
   },
@@ -236,8 +152,7 @@ export default {
       var datas = {'type': 'view_posts', 'start_index': pid, 'post_num': 1};
       var params = Qs.stringify(datas);
       console.log(datas, params);
-      axios({url: 'index', method: 'post', data: params}, )
-        .then((res) => {
+      axios({url: 'index', method: 'post', data: params}).then((res) => {
           if (res.data.succ) {
             console.log('succ', res.data);
             this.set_postDetail(res.data.post_info_list[0]);
@@ -255,8 +170,7 @@ export default {
       var datas = {'type': 'view_replies', 'pid': pid};
       var params = Qs.stringify(datas);
       console.log(datas, params);
-      axios({url: 'index', method: 'post', data: params}, )
-        .then((res) => {
+      axios({url: 'index', method: 'post', data: params}, ).then((res) => {
           if (res.data.succ) {
             console.log('succ', res.data);
             this.set_replyDetail(res.data.reply_info_list);
@@ -285,8 +199,7 @@ export default {
           // var params = datas;
           var params = Qs.stringify(datas);
           console.log(datas, params);
-          axios({url: 'index', method: 'post', data: params}, )
-            .then((res) => {
+          axios({url: 'index', method: 'post', data: params}, ).then((res) => {
               if (res.data.succ) {
                 console.log('succ', res.data);
                 this.get_replies(this.$route.query.pid);
@@ -304,8 +217,25 @@ export default {
     set_postDetail(post) {
       this.postDetail.pid = post.pid;
       this.postDetail.description = post.description;
-      this.postDetail.images = '';
-      if (post.images_src) this.postDetail.images = post.image_src.split(',');
+      this.postDetail.images = [];
+      let image_list = [];
+      if (post.image_src) this.postDetail.images = post.image_src.split(',');
+      //是要加个require吧
+      // console.log(post.image_src)
+    
+      // if (post.image_src) {
+      //   image_list = post.image_src.split(',');
+        
+      //   };
+      // console.log("imagelist",image_list);  
+      
+      
+      // for(let i=0;i < image_list.length;i++)
+      // {
+      //   let dic = {"src":require(image_list[i])};
+      //   console.log("dic",dic)
+      //   this.postDetail.images.push(dic);
+      // }
       this.postDetail.time = new Date(post.timestamp * 1000);
       // 必须用$set才能提醒视图更新内容，不然视图是检测不到data中对象的某个属性发生更新的
       this.$set(this.postDetail, 'user_name', post.user_name);
@@ -334,7 +264,7 @@ export default {
         let arr = []
         let i = 0;
         for(i;i < this.postDetail.images.length;i++){
-            arr.push(this.postDetail.images[i+index].src);
+            arr.push(this.postDetail.images[i+index]);
             if(i+index >= this.postDetail.images.length-1){
             index = 0-(i+1);
             }
