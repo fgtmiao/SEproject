@@ -1,5 +1,6 @@
 <template>
 <div>
+
 <div>
 <!--header-->
 <el-page-header @back="goBack" content="帖子详情">
@@ -8,27 +9,24 @@
 </div>
 
 <el-card class = "Postcard"  :body-style="{ padding: '30px' }"  >
-        <!--发帖人-->
     <div @click="getUserInfo()">
       <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" ></el-avatar>
       <span>{{postDetail.user_name}}</span>
     </div>
+
     <div style="padding: 14px;" >
       <span class="PostDescription">{{postDetail.description}}</span>
       <div class="SongList">
-          <!-- 
-          <div class="covers" :style="{display:MinDisplay}">
-          <div class="cover" v-for="(img,index) in postDetail.images" :key='index'>
-          <el-image :src="img.src" width="90%" class="min" :lazy="true"
+        <div class="covers" :style="{display:MinDisplay}">
+        <div class="cover" v-for="(img,index) in postDetail.images" :key='index'>
+        <el-image :src="img" width="90%" class="min" :lazy="true"
           :preview-src-list="getPreviewImgList(index)"></el-image>
-          </div> 
-          -->
-        <div v-for="image in postDetail.images" :key="image.value" class="imgbox"><img class="image" v-bind:src="image"></div>
+        </div> 
+        <!--div v-for="image in postDetail.images" :key="image.value" class="imgbox"><img class="image" v-bind:src="image"></div-->
+        </div>
       </div>
     </div>
-       <!--div class="max" :style="{display:display}">
-            <div @click="ZoomOut"  v-for="(img,index) in postDetail.images" :key='index' :class="[index===ShowIndex?'active':'None']" ><img :src="img.src" width="100%"></div>
-        </div-->
+
     <div class="bottom clearfix">
       <p class="pid">#{{postDetail.pid}}</p>
       <time class="time">{{postDetail.time}}</time>
@@ -124,37 +122,10 @@ import Qs from 'qs'
 import axios from "axios"
 
 export default {
-    //for comment
 
-// const clickoutside = {
-//     // 初始化指令
-//     bind(el, binding, vnode) {
-//     function documentHandler(e) {
-//     // 这里判断点击的元素是否是本身，是本身，则返回
-//         if (el.contains(e.target)) {
-//             return false;
-//         }
-//     // 判断指令中是否绑定了函数
-//         if (binding.expression) {
-//             // 如果绑定了函数 则调用那个函数，此处binding.value就是handleClose方法
-//             binding.value(e);
-//         }
-//     }
-//     // 给当前元素绑定个私有变量，方便在unbind中可以解除事件监听
-//     el.vueClickOutside = documentHandler;
-//     document.addEventListener('click', documentHandler);
-//     },
-//     update() {},
-//     unbind(el, binding) {
-//     // 解除事件监听
-//     document.removeEventListener('click', el.vueClickOutside);
-//     delete el.vueClickOutside;
-//   },
-// };
 
 
   data() {
-    name:'This is ArticleComment';
     return {
       ShowIndex:0,
       display: 'none',
@@ -168,7 +139,7 @@ export default {
       index:'0',
       replyComment:'',
       myName:'name1',
-      myHeader:'https://ae01.alicdn.com/kf/Hd60a3f7c06fd47ae85624badd32ce54dv.jpg',
+      myHeader:'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
       myId:1,
       to:'',
       toId:-1,
@@ -181,8 +152,7 @@ export default {
       var datas = {'type': 'view_posts', 'start_index': pid, 'post_num': 1};
       var params = Qs.stringify(datas);
       console.log(datas, params);
-      axios({url: 'index', method: 'post', data: params}, )
-        .then((res) => {
+      axios({url: 'index', method: 'post', data: params}).then((res) => {
           if (res.data.succ) {
             console.log('succ', res.data);
             this.set_postDetail(res.data.post_info_list[0]);
@@ -200,8 +170,7 @@ export default {
       var datas = {'type': 'view_replies', 'pid': pid};
       var params = Qs.stringify(datas);
       console.log(datas, params);
-      axios({url: 'index', method: 'post', data: params}, )
-        .then((res) => {
+      axios({url: 'index', method: 'post', data: params}, ).then((res) => {
           if (res.data.succ) {
             console.log('succ', res.data);
             this.set_replyDetail(res.data.reply_info_list);
@@ -230,8 +199,7 @@ export default {
           // var params = datas;
           var params = Qs.stringify(datas);
           console.log(datas, params);
-          axios({url: 'index', method: 'post', data: params}, )
-            .then((res) => {
+          axios({url: 'index', method: 'post', data: params}, ).then((res) => {
               if (res.data.succ) {
                 console.log('succ', res.data);
                 this.get_replies(this.$route.query.pid);
@@ -249,8 +217,25 @@ export default {
     set_postDetail(post) {
       this.postDetail.pid = post.pid;
       this.postDetail.description = post.description;
-      this.postDetail.images = '';
+      this.postDetail.images = [];
+      let image_list = [];
       if (post.image_src) this.postDetail.images = post.image_src.split(',');
+      //是要加个require吧
+      // console.log(post.image_src)
+    
+      // if (post.image_src) {
+      //   image_list = post.image_src.split(',');
+        
+      //   };
+      // console.log("imagelist",image_list);  
+      
+      
+      // for(let i=0;i < image_list.length;i++)
+      // {
+      //   let dic = {"src":require(image_list[i])};
+      //   console.log("dic",dic)
+      //   this.postDetail.images.push(dic);
+      // }
       this.postDetail.time = new Date(post.timestamp * 1000);
       // 必须用$set才能提醒视图更新内容，不然视图是检测不到data中对象的某个属性发生更新的
       this.$set(this.postDetail, 'user_name', post.user_name);
@@ -391,10 +376,6 @@ export default {
 .SongList{
     width: 60%;
     display:table-cell;
-}
-
-.SongList div, .image {
-  width: 200px; display: inline-block;
 }
 .covers{
         display: flex;
