@@ -16,57 +16,56 @@ import Baike from "@/components/baike/baike.vue"
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
-      path: '/',//路由和组件
+  routes: [{
+      path: '/', //路由和组件
       name: 'Login',
       component: Login
     },
     {
-      path:'/signup',
-      name:'SignUp',
-      component:SignUp
+      path: '/signup',
+      name: 'SignUp',
+      component: SignUp
     },
     {
-      path:'/mainposts',
-      name:'MainPosts',
+      path: '/mainposts',
+      name: 'MainPosts',
       meta: {
         requireauth: true, // 判断是否需要登录
       },
-      component:MainPosts
+      component: MainPosts
     },
     {
-      path:'/postupload',
-      name:'Upload',
+      path: '/postupload',
+      name: 'Upload',
       meta: {
         requireauth: true, // 判断是否需要登录
-       },
-      component:PostUpload
+      },
+      component: PostUpload
     },
     {
-      path:'/postDetail',
-      name:'postDetail',
+      path: '/postDetail',
+      name: 'postDetail',
       meta: {
         requireauth: true, // 判断是否需要登录
-       },
-      component:PostDetail
+      },
+      component: PostDetail
     },
     {
-      path:'/userinfo',
-      name:'UserInfo',
+      path: '/userinfo',
+      name: 'UserInfo',
       meta: {
         requireauth: true, // 判断是否需要登录
-       },
-      component:UserInfo
+      },
+      component: UserInfo
     },
 
     {
-      path:'/baike',
-      name:'Baike',
+      path: '/baike',
+      name: 'Baike',
       meta: {
         requireauth: true, // 判断是否需要登录
-       },
-      component:Baike
+      },
+      component: Baike
     },
   ]
 })

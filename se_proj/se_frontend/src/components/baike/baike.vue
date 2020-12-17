@@ -1,24 +1,24 @@
 <template>
-<!--不复用-->
-<div class = "allbox">
-<span>This is Baike for {{type}}</span>
+  <!--不复用-->
+  <div class="allbox">
+    <span>This is Baike for {{type}}</span>
 
-</div>
+  </div>
 </template>
 
 <script>
-export default{
+  export default {
 
-    data(){
-        return{
-            type:this.$route.query.type
+    data() {
+      return {
+        type: this.$route.query.type
 
-        }
+      }
     },
-    methods:{
+    methods: {
 
     }
-}
+  }
 
 </script>
 
