@@ -184,6 +184,32 @@ def add_post(request, payload):
     return JsonResponse({'succ': True, 'postid': post.pid})
 
 
+def view_replies(request):
+    '''
+    POST params:
+        [requried] pid: int, 要查看哪个帖子的回复
+    '''
+    pid = int(request.POST.get('pid', default=-1))
+    reply_query_set = Reply.objects.filter(post=pid)
+    reply_dicts = []
+    for reply in reply_query_set:
+        reply_dicts.append(model_to_dict(reply))
+
+    # 将结果中的publisher从uid转换为user_name
+    uid_to_user = dict()
+    uids = set([reply_dict['publisher'] for reply_dict in reply_dicts])
+    for uid in uids:
+        try:
+            publisher_user = User.objects.get(uid=uid)
+            uid_to_user[uid] = {'user_name': publisher_user.user_name, 'user_fig': publisher_user.user_fig_src}
+        except Exception:
+            uid_to_user[uid] = ''
+
+    for i, reply_dict in enumerate(reply_dicts):
+        reply_dicts[i]['user_name'] = uid_to_user[reply_dict['publisher']]['user_name']
+        reply_dicts[i]['user_fig'] = uid_to_user[reply_dict['publisher']]['user_fig']
+    return JsonResponse({'succ': True, 'reply_info_list': reply_dicts})
+
 def comment_post(request, payload):
     '''
     POST params:
@@ -219,30 +245,3 @@ def comment_post(request, payload):
     reply.timestamp = int(time.time())
     reply.save()
     return JsonResponse({'succ': True, 'floor': reply_floor})
-
-
-def view_replies(request):
-    '''
-    POST params:
-        [requried] pid: int, 要查看哪个帖子的回复
-    '''
-    pid = int(request.POST.get('pid', default=-1))
-    reply_query_set = Reply.objects.filter(post=pid)
-    reply_dicts = []
-    for reply in reply_query_set:
-        reply_dicts.append(model_to_dict(reply))
-
-    # 将结果中的publisher从uid转换为user_name
-    uid_to_user = dict()
-    uids = set([reply_dict['publisher'] for reply_dict in reply_dicts])
-    for uid in uids:
-        try:
-            publisher_user = User.objects.get(uid=uid)
-            uid_to_user[uid] = {'user_name': publisher_user.user_name, 'user_fig': publisher_user.user_fig_src}
-        except Exception:
-            uid_to_user[uid] = ''
-
-    for i, reply_dict in enumerate(reply_dicts):
-        reply_dicts[i]['user_name'] = uid_to_user[reply_dict['publisher']]['user_name']
-        reply_dicts[i]['user_fig'] = uid_to_user[reply_dict['publisher']]['user_fig']
-    return JsonResponse({'succ': True, 'reply_info_list': reply_dicts})
