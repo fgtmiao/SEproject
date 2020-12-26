@@ -19,7 +19,7 @@ from se_proj.settings import ALLOWED_HOSTS
 
 image_base_folder = '/data/SEproject/images'
 
-
+#加密
 def build_jwt_token(secret, user_name):
     header_text = base64.b64encode(json.dumps({"alg": "HS256", "typ": "JWT"}).encode()).decode()
     payload_text = base64.b64encode(json.dumps({'lia': user_name}).encode()).decode()       # lia: login as
@@ -28,28 +28,8 @@ def build_jwt_token(secret, user_name):
     return jwt
 
 
-def signin(request):
-    '''
-    POST params:
-        [required] user_name: str
-        [required] password: str
-    '''
 
-    try:
-        user = User.objects.get(user_name=request.POST.get('user_name'), password=request.POST.get('password'))
-    except django.core.exceptions.ObjectDoesNotExist:
-        return JsonResponse({'succ': False, 'errmsg': 'user_name or password invalid'})
-    except django.core.exceptions.MultipleObjectsReturned:
-        return JsonResponse({'succ': False, 'errmsg': 'user_name or password invalid'})
-
-    secret_token = ''.join(random.sample(string.ascii_letters + string.digits, 32))
-    user.secret_token = secret_token
-    user.last_login_time = int(time.time())
-    user.save()
-    jwt_token = build_jwt_token(secret_token, request.POST.get('user_name'))
-    return JsonResponse({'succ': True, 'token': jwt_token})
-
-
+#注册
 def signup(request):
     '''
     POST params:
@@ -72,6 +52,32 @@ def signup(request):
     return signin(request)
 
 
+#登录
+def signin(request):
+    '''
+    POST params:
+        [required] user_name: str
+        [required] password: str
+    '''
+
+    try:
+        user = User.objects.get(user_name=request.POST.get('user_name'), password=request.POST.get('password'))
+    except django.core.exceptions.ObjectDoesNotExist:
+        return JsonResponse({'succ': False, 'errmsg': 'user_name or password invalid'})
+    except django.core.exceptions.MultipleObjectsReturned:
+        return JsonResponse({'succ': False, 'errmsg': 'user_name or password invalid'})
+
+    secret_token = ''.join(random.sample(string.ascii_letters + string.digits, 32))
+    user.secret_token = secret_token
+    user.last_login_time = int(time.time())
+    user.save()
+    jwt_token = build_jwt_token(secret_token, request.POST.get('user_name'))
+    return JsonResponse({'succ': True, 'token': jwt_token})
+
+
+
+
+#登出
 def signout(request, payload):
     '''
     POST params:
@@ -83,7 +89,7 @@ def signout(request, payload):
     user.save()
     return JsonResponse({'succ': True})
 
-
+#查看帖子
 def view_posts(request):
     '''
     POST params:
@@ -135,6 +141,54 @@ def view_posts(request):
     return JsonResponse({'succ': True, 'post_info_list': post_dicts})
 
 
+#评论帖子
+def comment_post(request, payload):
+    '''
+    POST params:
+        [required] jwt: str, basr64 encoded json web token
+        [required] reply: dict
+        [required] reply[post]: int, 要回复的帖子的pid
+        [required] reply[description]: str
+        [optional] reply[image_src]: str
+    '''
+
+    pid = request.POST.get('reply[post]')
+    description = request.POST.get('reply[description]')
+    image_src = request.POST.get('reply[image_src]')
+
+    publisher = User.objects.get(user_name=payload['lia']).uid
+    if not description:
+        return JsonResponse({'succ': False, 'errmsg': 'reply description required'})
+    if not pid:
+        return JsonResponse({'succ': False, 'errmsg': 'reply post id required'})
+
+    replies = Reply.objects.filter(post=pid).order_by(F('floor').desc())
+    if len(replies) == 0:
+        reply_floor = 0
+    else:
+        reply_floor = replies[0].floor + 1
+
+    reply = Reply()
+    reply.publisher = publisher
+    reply.description = description
+    reply.image_src = image_src
+    reply.post = pid
+    reply.floor = reply_floor
+    reply.timestamp = int(time.time())
+    reply.save()
+    return JsonResponse({'succ': True, 'floor': reply_floor})
+
+
+
+
+
+
+
+
+
+
+
+#添加帖子
 def add_post(request, payload):
     '''
     POST params:
@@ -183,7 +237,7 @@ def add_post(request, payload):
     post.save()
     return JsonResponse({'succ': True, 'postid': post.pid})
 
-
+#查看回复
 def view_replies(request):
     '''
     POST params:
@@ -210,38 +264,3 @@ def view_replies(request):
         reply_dicts[i]['user_fig'] = uid_to_user[reply_dict['publisher']]['user_fig']
     return JsonResponse({'succ': True, 'reply_info_list': reply_dicts})
 
-def comment_post(request, payload):
-    '''
-    POST params:
-        [required] jwt: str, basr64 encoded json web token
-        [required] reply: dict
-        [required] reply[post]: int, 要回复的帖子的pid
-        [required] reply[description]: str
-        [optional] reply[image_src]: str
-    '''
-
-    pid = request.POST.get('reply[post]')
-    description = request.POST.get('reply[description]')
-    image_src = request.POST.get('reply[image_src]')
-
-    publisher = User.objects.get(user_name=payload['lia']).uid
-    if not description:
-        return JsonResponse({'succ': False, 'errmsg': 'reply description required'})
-    if not pid:
-        return JsonResponse({'succ': False, 'errmsg': 'reply post id required'})
-
-    replies = Reply.objects.filter(post=pid).order_by(F('floor').desc())
-    if len(replies) == 0:
-        reply_floor = 0
-    else:
-        reply_floor = replies[0].floor + 1
-
-    reply = Reply()
-    reply.publisher = publisher
-    reply.description = description
-    reply.image_src = image_src
-    reply.post = pid
-    reply.floor = reply_floor
-    reply.timestamp = int(time.time())
-    reply.save()
-    return JsonResponse({'succ': True, 'floor': reply_floor})
