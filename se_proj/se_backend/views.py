@@ -45,6 +45,9 @@ def requset_index(request):
         if payload:
             return index.comment_post(request, payload)
 
+    elif request.POST['type'] == 'get_location':
+        return index.get_location(request)
+
     else:
         return JsonResponse({'succ': False, 'errmsg': 'undefined request'})
     return JsonResponse({'succ': False, 'errmsg': 'authentication failed'})

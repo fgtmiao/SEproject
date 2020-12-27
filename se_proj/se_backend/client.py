@@ -9,7 +9,7 @@ import hmac
 
 if __name__ == "__main__":
 
-    index_url = 'http://127.0.0.1:8000/index'
+    index_url = 'http://127.0.0.1/index'        # when test on server
 
     # 1. 模拟注册
     user_name = '红黑树'
@@ -39,7 +39,9 @@ if __name__ == "__main__":
     # 2. 模拟发帖
     post_params = {
         'type': 'add_post', 'jwt': jwt,
-        'post[description]': '创世帖'
+        'post[description]': '这是一个有类别信息和位置信息的帖子',
+        'post[position]': '',
+        'post[animal_class]': 'bird-swan'       # 多级用'-'相连，例如鸟类-天鹅
     }
     res = requests.post(url=index_url, data=post_params)
     print('模拟发帖 返回结果: %s' % res.text)
@@ -54,27 +56,48 @@ if __name__ == "__main__":
 
     # 4. 模拟读取指定的帖子
     post_params = {
-        'type': 'view_posts', 'start_inedx': 5, 'post_num': 3
+        'type': 'view_posts', 'start_index': 5, 'post_num': 3
     }
     res = requests.post(url=index_url, data=post_params)
     print('指定读取 返回结果: %s' % res.text)
 
-    # 5. 模拟回复
+    # 5. 模拟根据动物类别检索帖子
+    post_params = {
+        'type': 'view_posts', 'animal_class': 'bird'    # 只用'bird'类别也能检索到'bird-swan'类别的帖子
+    }
+    res = requests.post(url=index_url, data=post_params)
+    print('动物类别检索帖子 返回结果: %s' % res.text)
+
+    # 6. 模拟根据正文信息检索帖子
+    post_params = {
+        'type': 'view_posts', 'description': '位置'
+    }
+    res = requests.post(url=index_url, data=post_params)
+    print('正文内容检索帖子 返回结果: %s' % res.text)
+
+    # 7. 模拟回复
     post_params = {
         'type': 'comment_post', 'jwt': jwt,
-        'reply': json.dumps({'post': postid, 'description': '创世回复'})
+        'reply[post]': postid, 'reply[description]': '创世回复'
     }
     res = requests.post(url=index_url, data=post_params)
     print('模拟回复 返回结果: %s' % (res.text))
 
-    # 6. 模拟读取回复
+    # 8. 模拟读取回复
     post_params = {
         'type': 'view_replies', 'pid': postid
     }
     res = requests.post(url=index_url, data=post_params)
     print('模拟读取回复 返回结果: %s' % (res.text))
 
-    # 7. 退出登录
+    # 9. 模拟检索一种类型的动物的最近位置
+    post_params = {
+        'type': 'get_location', 'animal_class': 'bird-swan'     # 当然用'bird-swan'这个类别全名检索也是可以的
+    }
+    res = requests.post(url=index_url, data=post_params)
+    print('模拟获取位置 返回结果: %s' % (res.text))
+
+    # 10. 退出登录
     post_params = {
         'type': 'signout', 'jwt': jwt,
     }

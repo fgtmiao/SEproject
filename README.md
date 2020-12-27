@@ -16,7 +16,7 @@ for 软件工程项目
 # 工程运行方法
 进入工程目录（即`manage.py`所在的目录） `cd se_proj`
 
-安装所需的python包 `pip install django pymysql`
+安装所需的python包 `pip install django pymysql requests`
 
 `cp ./se_proj/config.sample.py ./se_proj/config.py` 并在`config.py`中修改你的数据库配置
 
@@ -29,3 +29,5 @@ for 软件工程项目
 
 # 后端测试方法
 运行后端测试样例 `python ./se_backend/client.py`
+
+运行前请将`se_backend/client.py`中`index_url`修改为你的后端服务实际所在的地址。
