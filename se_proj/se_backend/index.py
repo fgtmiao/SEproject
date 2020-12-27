@@ -19,7 +19,7 @@ from se_proj.settings import ALLOWED_HOSTS
 
 image_base_folder = '/data/SEproject/images'
 
-#加密
+
 def build_jwt_token(secret, user_name):
     header_text = base64.b64encode(json.dumps({"alg": "HS256", "typ": "JWT"}).encode()).decode()
     payload_text = base64.b64encode(json.dumps({'lia': user_name}).encode()).decode()       # lia: login as
@@ -27,32 +27,6 @@ def build_jwt_token(secret, user_name):
     jwt = header_text + '.' + payload_text + '.' + signature_text
     return jwt
 
-
-
-#注册
-def signup(request):
-    '''
-    POST params:
-        [required] user_name: str
-        [required] password: str
-    '''
-    # 检查用户名是否已经被注册过
-    result = User.objects.filter(user_name=request.POST.get('user_name'))
-    if len(result) != 0:
-        return JsonResponse({'succ': False, 'errmsg': 'user_name already exists'})
-
-    # 添加新用户信息
-    user = User()
-    user.user_name = request.POST.get('user_name')
-    user.password = request.POST.get('password')
-    user.reg_time = int(time.time())
-    user.save()
-
-    # 注册完成后登录
-    return signin(request)
-
-
-#登录
 def signin(request):
     '''
     POST params:
@@ -75,9 +49,28 @@ def signin(request):
     return JsonResponse({'succ': True, 'token': jwt_token})
 
 
+def signup(request):
+    '''
+    POST params:
+        [required] user_name: str
+        [required] password: str
+    '''
+    # 检查用户名是否已经被注册过
+    result = User.objects.filter(user_name=request.POST.get('user_name'))
+    if len(result) != 0:
+        return JsonResponse({'succ': False, 'errmsg': 'user_name already exists'})
+
+    # 添加新用户信息
+    user = User()
+    user.user_name = request.POST.get('user_name')
+    user.password = request.POST.get('password')
+    user.reg_time = int(time.time())
+    user.save()
+
+    # 注册完成后登录
+    return signin(request)
 
 
-#登出
 def signout(request, payload):
     '''
     POST params:
@@ -89,19 +82,22 @@ def signout(request, payload):
     user.save()
     return JsonResponse({'succ': True})
 
-#查看帖子
+
 def view_posts(request):
     '''
     POST params:
         [optional] start_index: int, 要获取的post中pid最大的一个。默认为数据库所有post中最大的pid
         [optional] post_num: int, 要获取的帖子数量。默认为20，不能大于100
-        [optional] animal_class: str
-        [optional] position: str
+        [optional] animal_class: str, 根据动物类型检索
+        [optional] position: str, 根据地理位置检索，目前的实现方式是
+        [optional] description: str, 根据帖子内容检索
     '''
     start_index = int(request.POST.get('start_index', default=-1))
     post_num = int(request.POST.get('post_num', default=20))
     animal_class = request.POST.get('animal_class')
     position = request.POST.get('position')
+    description = request.POST.get('description')
+
     if post_num > 100:
         return JsonResponse({'succ': False, 'errmsg': 'requset post_num should not be larger than 100'})
     if start_index == -1:
@@ -110,8 +106,9 @@ def view_posts(request):
     if animal_class:
         post_query_set = post_query_set.filter(animal_class__startswith=animal_class)
     if position:
-        # 目前通过position字符串精确匹配实现potision的筛选，将来可能通过坐标比较等更有实际价值的方式
         post_query_set = post_query_set.filter(position=position)
+    if description:
+        post_query_set = post_query_set.filter(description__contains=description)
     post_query_set = post_query_set.order_by(F('pid').desc())
 
     # 从query_set中取出前n个结果并返回
@@ -141,54 +138,33 @@ def view_posts(request):
     return JsonResponse({'succ': True, 'post_info_list': post_dicts})
 
 
-#评论帖子
-def comment_post(request, payload):
+def view_replies(request):
     '''
     POST params:
-        [required] jwt: str, basr64 encoded json web token
-        [required] reply: dict
-        [required] reply[post]: int, 要回复的帖子的pid
-        [required] reply[description]: str
-        [optional] reply[image_src]: str
+        [requried] pid: int, 要查看哪个帖子的回复
     '''
+    pid = int(request.POST.get('pid', default=-1))
+    reply_query_set = Reply.objects.filter(post=pid)
+    reply_dicts = []
+    for reply in reply_query_set:
+        reply_dicts.append(model_to_dict(reply))
 
-    pid = request.POST.get('reply[post]')
-    description = request.POST.get('reply[description]')
-    image_src = request.POST.get('reply[image_src]')
+    # 将结果中的publisher从uid转换为user_name
+    uid_to_user = dict()
+    uids = set([reply_dict['publisher'] for reply_dict in reply_dicts])
+    for uid in uids:
+        try:
+            publisher_user = User.objects.get(uid=uid)
+            uid_to_user[uid] = {'user_name': publisher_user.user_name, 'user_fig': publisher_user.user_fig_src}
+        except Exception:
+            uid_to_user[uid] = ''
 
-    publisher = User.objects.get(user_name=payload['lia']).uid
-    if not description:
-        return JsonResponse({'succ': False, 'errmsg': 'reply description required'})
-    if not pid:
-        return JsonResponse({'succ': False, 'errmsg': 'reply post id required'})
-
-    replies = Reply.objects.filter(post=pid).order_by(F('floor').desc())
-    if len(replies) == 0:
-        reply_floor = 0
-    else:
-        reply_floor = replies[0].floor + 1
-
-    reply = Reply()
-    reply.publisher = publisher
-    reply.description = description
-    reply.image_src = image_src
-    reply.post = pid
-    reply.floor = reply_floor
-    reply.timestamp = int(time.time())
-    reply.save()
-    return JsonResponse({'succ': True, 'floor': reply_floor})
+    for i, reply_dict in enumerate(reply_dicts):
+        reply_dicts[i]['user_name'] = uid_to_user[reply_dict['publisher']]['user_name']
+        reply_dicts[i]['user_fig'] = uid_to_user[reply_dict['publisher']]['user_fig']
+    return JsonResponse({'succ': True, 'reply_info_list': reply_dicts})
 
 
-
-
-
-
-
-
-
-
-
-#添加帖子
 def add_post(request, payload):
     '''
     POST params:
@@ -197,7 +173,7 @@ def add_post(request, payload):
         [required] post[description]: str
         [optional] post[image]: bin
         [optional] post[animal_class]: str
-        [optional] post[position]: str
+        [optional] post[position]: str "[x],[y]". e.g.: "0.123,5.345"
     '''
 
     description = request.POST.get('post[description]')
@@ -237,30 +213,71 @@ def add_post(request, payload):
     post.save()
     return JsonResponse({'succ': True, 'postid': post.pid})
 
-#查看回复
-def view_replies(request):
+
+def comment_post(request, payload):
     '''
     POST params:
-        [requried] pid: int, 要查看哪个帖子的回复
+        [required] jwt: str, basr64 encoded json web token
+        [required] reply: dict
+        [required] reply[post]: int, 要回复的帖子的pid
+        [required] reply[description]: str
+        [optional] reply[image_src]: str
     '''
-    pid = int(request.POST.get('pid', default=-1))
-    reply_query_set = Reply.objects.filter(post=pid)
-    reply_dicts = []
-    for reply in reply_query_set:
-        reply_dicts.append(model_to_dict(reply))
 
-    # 将结果中的publisher从uid转换为user_name
-    uid_to_user = dict()
-    uids = set([reply_dict['publisher'] for reply_dict in reply_dicts])
-    for uid in uids:
-        try:
-            publisher_user = User.objects.get(uid=uid)
-            uid_to_user[uid] = {'user_name': publisher_user.user_name, 'user_fig': publisher_user.user_fig_src}
-        except Exception:
-            uid_to_user[uid] = ''
+    pid = request.POST.get('reply[post]')
+    description = request.POST.get('reply[description]')
+    image_src = request.POST.get('reply[image_src]')
 
-    for i, reply_dict in enumerate(reply_dicts):
-        reply_dicts[i]['user_name'] = uid_to_user[reply_dict['publisher']]['user_name']
-        reply_dicts[i]['user_fig'] = uid_to_user[reply_dict['publisher']]['user_fig']
-    return JsonResponse({'succ': True, 'reply_info_list': reply_dicts})
+    publisher = User.objects.get(user_name=payload['lia']).uid
+    if not description:
+        return JsonResponse({'succ': False, 'errmsg': 'reply description required'})
+    if not pid:
+        return JsonResponse({'succ': False, 'errmsg': 'reply post id required'})
 
+    replies = Reply.objects.filter(post=pid).order_by(F('floor').desc())
+    if len(replies) == 0:
+        reply_floor = 0
+    else:
+        reply_floor = replies[0].floor + 1
+
+    reply = Reply()
+    reply.publisher = publisher
+    reply.description = description
+    reply.image_src = image_src
+    reply.post = pid
+    reply.floor = reply_floor
+    reply.timestamp = int(time.time())
+    reply.save()
+    return JsonResponse({'succ': True, 'floor': reply_floor})
+
+
+def get_location(request):
+    '''
+    POST params:
+        [required] animal_class: str
+        [optional] pos_num: int, 要返回的坐标数量，返回该动物类别最近发布的pos_num个有坐标信息的帖子中的坐标。默认为10
+    '''
+
+    animal_class = request.POST.get('animal_class')
+    pos_num = int(request.POST.get('pos_num', default=-1))
+
+    if not animal_class:
+        return JsonResponse({'succ': False, 'errmsg': 'animal class required'})
+    if pos_num == -1:
+        pos_num = 10
+
+    post_query_set = Post.objects.filter(animal_class__startswith=animal_class)
+    post_query_set = post_query_set.exclude(position__isnull=True).exclude(position__exact='')
+    post_query_set = post_query_set.order_by(F('pid').desc())
+
+    # 从query_set中取出前n个结果并返回帖子的位置信息和pid
+    post_dicts = []
+    for post in post_query_set:
+        post_dicts.append(model_to_dict(post))
+        if len(post_dicts) >= pos_num:
+            break
+    pos, pid = [], []
+    for post_dict in post_dicts:
+        pos.append(post_dict['position'])
+        pid.append(post_dict['pid'])
+    return JsonResponse({'succ': True, 'pos': pos, 'pid': pid})
