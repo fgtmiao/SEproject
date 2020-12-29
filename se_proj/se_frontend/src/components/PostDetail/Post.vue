@@ -31,7 +31,10 @@
         <p class="pid">#{{postDetail.pid}}</p>
         <time class="time">{{postDetail.time}}</time>
         <!--el-button type="text" class="button">帖子详情</el-button-->
+      </div>
+      <div>
         <el-button>点赞num</el-button>
+        <el-button @click="showLocation()">位置</el-button>
       </div>
     </el-card>
 
@@ -228,6 +231,7 @@
       set_postDetail(post) {
         this.postDetail.pid = post.pid;
         this.postDetail.description = post.description;
+        this.postDetail.position = post.position;
         this.postDetail.images = [];
         let image_list = [];
         if (post.image_src) this.postDetail.images = post.image_src.split(',');
@@ -382,14 +386,29 @@
           var date = new Date(parseInt(date));
           return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
         }
-      }
+      },
+      showLocation()
+      {
+        var _this = this;
+        if(this.postDetail.position){
+          console.log(this.postDetail.position)
+          this.$router.push({
+            path: '/showLocation',
+            query: {
+              "position":this.postDetail.position
+            }
+          })
+        }
+    }
     },
 
     created: function () {
       console.log('created pid: ', this.$route.query.pid);
       this.get_post(this.$route.query.pid);
       this.get_replies(this.$route.query.pid);
-    }
+    },
+
+
   }
 
 </script>

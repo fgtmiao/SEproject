@@ -12,6 +12,7 @@ import UserInfo from "@/components/UserInfo/userinfo_display.vue"
 // import UserInfo from "@/components/UserInfo/test.vue"
 
 import Baike from "@/components/baike/baike.vue"
+import showLocation from "@/components/PostDetail/showLocation.vue"
 
 Vue.use(Router)
 
@@ -66,6 +67,14 @@ export default new Router({
         requireauth: true, // 判断是否需要登录
       },
       component: Baike
+    },
+    {
+      path: '/showLocation',
+      name: 'showLocation',
+      meta: {
+        requireauth: true, // 判断是否需要登录
+      },
+      component: showLocation
     },
   ]
 })

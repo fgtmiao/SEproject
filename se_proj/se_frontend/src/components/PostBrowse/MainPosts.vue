@@ -184,8 +184,10 @@
 
       searchF() {
         //search for
-        console.log(this.searchbar.input)
-        console.log(localStorage.getItem('token'));
+        // console.log(this.searchbar.input)
+        // console.log(localStorage.getItem('token'));
+        //search here
+        
       },
       loadMore() {
 

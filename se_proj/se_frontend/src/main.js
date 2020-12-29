@@ -4,10 +4,17 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from 'axios'
+
 /* 引入组件包 */
+//for modify img
+
+
+//for elementUI
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import ElImageViewer from "element-ui/packages/image/src/image-viewer";
+import less from 'less'
+Vue.use(less)
 Vue.config.productionTip = false
 //设置axios
 Vue.prototype.$axios = axios
