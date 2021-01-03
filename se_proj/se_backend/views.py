@@ -58,6 +58,9 @@ def requset_userinfo(request):
     if 'type' not in request.POST:
         return HttpResponse('Hello World from page userinfo!')
 
+    elif request.POST['type'] == 'get_user_info':
+        return userinfo.get_user_info(request)
+
     elif request.POST['type'] == 'change_user_fig':
         payload = verify_jwt(request.POST['jwt'])
         if payload:

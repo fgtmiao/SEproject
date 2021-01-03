@@ -20,6 +20,34 @@ from se_proj.settings import ALLOWED_HOSTS
 image_base_folder = '/data/SEproject/images'
 
 
+def get_user_info(request):
+    '''
+    POST params:
+        [optional] uid: int, 想获取的用户的uid
+        [optional] user_name: str, 想获取的用户的用户名
+    '''
+    uid = request.POST.get('uid')
+    user_name = request.POST.get('user_name')
+    print(uid, user_name)
+    try:
+        if uid:
+            user = User.objects.get(uid=uid)
+        elif user_name:
+            user = User.objects.get(user_name=user_name)
+        else:
+            return JsonResponse({'succ': False, 'errmsg': 'uid or user_name required'})
+    except django.core.exceptions.ObjectDoesNotExist:
+        return JsonResponse({'succ': False, 'errmsg': 'user_name or uid invalid'})
+    except django.core.exceptions.MultipleObjectsReturned:
+        return JsonResponse({'succ': False, 'errmsg': 'user_name or uid invalid'})
+
+    user_info = {
+        'uid': user.uid, 'user_name': user.user_name, 'user_fig': user.user_fig_src,
+        'user_desc': user.user_desc, 'user_title': user.user_title, 'is_adm': user.is_adm
+    }
+    return JsonResponse({'succ': True, 'user_info': user_info})
+
+
 def change_user_fig(request, payload):
     '''
     POST params:

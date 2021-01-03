@@ -38,7 +38,14 @@ def main():
     print('my jwt token: %s' % jwt)
     jwt = jwt.encode()
 
-    # 2. 模拟更换头像
+    # 2. 模拟获取自己的用户信息
+    get_user_info_params = {
+        'type': 'get_user_info', 'user_name': '红黑树'
+    }
+    res = requests.post(url=userinfo_url, data=get_user_info_params)
+    print('模拟获取用户信息 返回结果: %s' % res.text)
+
+    # 3. 模拟更换头像
     test_image = open('./fig.jpeg', 'rb')
     # print(test_image)
     change_fig_params = {
@@ -47,9 +54,7 @@ def main():
     res = requests.post(url=userinfo_url, data=change_fig_params, files={'image': test_image})
     print('模拟更换头像 返回结果: %s' % res.text)
 
-    return
-
-    # 2. 模拟发帖
+    # 4. 模拟发帖
     post_params = {
         'type': 'add_post', 'jwt': jwt,
         'post[description]': '这是一个有类别信息和位置信息的帖子',
@@ -60,35 +65,35 @@ def main():
     print('模拟发帖 返回结果: %s' % res.text)
     postid = json.loads(res.content)['postid']
 
-    # 3. 模拟读取
+    # 5. 模拟读取
     post_params = {
         'type': 'view_posts'
     }
     res = requests.post(url=index_url, data=post_params)
     print('模拟读取 返回结果: %s' % res.text)
 
-    # 4. 模拟读取指定的帖子
+    # 6. 模拟读取指定的帖子
     post_params = {
         'type': 'view_posts', 'start_index': 5, 'post_num': 3
     }
     res = requests.post(url=index_url, data=post_params)
     print('指定读取 返回结果: %s' % res.text)
 
-    # 5. 模拟根据动物类别检索帖子
+    # 7. 模拟根据动物类别检索帖子
     post_params = {
         'type': 'view_posts', 'animal_class': 'bird'    # 只用'bird'类别也能检索到'bird-swan'类别的帖子
     }
     res = requests.post(url=index_url, data=post_params)
     print('动物类别检索帖子 返回结果: %s' % res.text)
 
-    # 6. 模拟根据正文信息检索帖子
+    # 8. 模拟根据正文信息检索帖子
     post_params = {
         'type': 'view_posts', 'description': '位置'
     }
     res = requests.post(url=index_url, data=post_params)
     print('正文内容检索帖子 返回结果: %s' % res.text)
 
-    # 7. 模拟回复
+    # 9. 模拟回复
     post_params = {
         'type': 'comment_post', 'jwt': jwt,
         'reply[post]': postid, 'reply[description]': '创世回复'
@@ -96,21 +101,21 @@ def main():
     res = requests.post(url=index_url, data=post_params)
     print('模拟回复 返回结果: %s' % (res.text))
 
-    # 8. 模拟读取回复
+    # 10. 模拟读取回复
     post_params = {
         'type': 'view_replies', 'pid': postid
     }
     res = requests.post(url=index_url, data=post_params)
     print('模拟读取回复 返回结果: %s' % (res.text))
 
-    # 9. 模拟检索一种类型的动物的最近位置
+    # 11. 模拟检索一种类型的动物的最近位置
     post_params = {
         'type': 'get_location', 'animal_class': 'bird-swan'     # 当然用'bird-swan'这个类别全名检索也是可以的
     }
     res = requests.post(url=index_url, data=post_params)
     print('模拟获取位置 返回结果: %s' % (res.text))
 
-    # 10. 退出登录
+    # 12. 退出登录
     post_params = {
         'type': 'signout', 'jwt': jwt,
     }
