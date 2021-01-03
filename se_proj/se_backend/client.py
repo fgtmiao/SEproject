@@ -1,4 +1,5 @@
 # coding=utf-8
+
 # client.py 模拟发送请求，用于后台调试
 
 import requests
@@ -7,9 +8,10 @@ import json
 import base64
 import hmac
 
-if __name__ == "__main__":
 
+def main():
     index_url = 'http://127.0.0.1/index'        # when test on server
+    userinfo_url = 'http://127.0.0.1/userinfo'        # when test on server
 
     # 1. 模拟注册
     user_name = '红黑树'
@@ -35,6 +37,17 @@ if __name__ == "__main__":
     jwt = json.loads(res.content)['token']
     print('my jwt token: %s' % jwt)
     jwt = jwt.encode()
+
+    # 2. 模拟更换头像
+    test_image = open('./fig.jpeg', 'rb')
+    # print(test_image)
+    change_fig_params = {
+        'jwt': jwt, 'type': 'change_user_fig'
+    }
+    res = requests.post(url=userinfo_url, data=change_fig_params, files={'image': test_image})
+    print('模拟更换头像 返回结果: %s' % res.text)
+
+    return
 
     # 2. 模拟发帖
     post_params = {
@@ -105,3 +118,7 @@ if __name__ == "__main__":
     print('退出登录 返回结果: %s' % res.text)
 
     print('client.py backend test finished')
+
+
+if __name__ == "__main__":
+    main()

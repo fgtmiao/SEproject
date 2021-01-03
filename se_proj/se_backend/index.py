@@ -27,6 +27,7 @@ def build_jwt_token(secret, user_name):
     jwt = header_text + '.' + payload_text + '.' + signature_text
     return jwt
 
+
 def signin(request):
     '''
     POST params:

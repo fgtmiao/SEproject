@@ -10,7 +10,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from se_backend.models import User, Post, Reply
 
-from se_backend import index
+from se_backend import index, userinfo
 
 
 @csrf_exempt
@@ -55,7 +55,18 @@ def requset_index(request):
 
 @csrf_exempt
 def requset_userinfo(request):
-    return HttpResponse('Hello World from page userinfo!')
+    if 'type' not in request.POST:
+        return HttpResponse('Hello World from page userinfo!')
+
+    elif request.POST['type'] == 'change_user_fig':
+        payload = verify_jwt(request.POST['jwt'])
+        if payload:
+            return userinfo.change_user_fig(request, payload)
+
+    else:
+        return JsonResponse({'succ': False, 'errmsg': 'undefined request'})
+    return JsonResponse({'succ': False, 'errmsg': 'authentication failed'})
+
 
 
 @csrf_exempt
