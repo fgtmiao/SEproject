@@ -15,6 +15,7 @@ from django.forms.models import model_to_dict
 from django.db.models import F
 from se_backend.models import User, Post, Reply
 from se_proj.settings import ALLOWED_HOSTS
+from se_backend import userinfo
 
 
 image_base_folder = '/data/SEproject/images'
@@ -26,6 +27,7 @@ def build_jwt_token(secret, user_name):
     signature_text = base64.b64encode(hmac.new(secret.encode(), (header_text + '.' + payload_text).encode(), digestmod='sha256').digest()).decode()
     jwt = header_text + '.' + payload_text + '.' + signature_text
     return jwt
+
 
 def signin(request):
     '''
@@ -46,7 +48,11 @@ def signin(request):
     user.last_login_time = int(time.time())
     user.save()
     jwt_token = build_jwt_token(secret_token, request.POST.get('user_name'))
-    return JsonResponse({'succ': True, 'token': jwt_token})
+    user_info = {
+        'uid': user.uid, 'user_name': user.user_name, 'user_fig': user.user_fig_src,
+        'user_desc': user.user_desc, 'user_title': user.user_title, 'is_adm': user.is_adm
+    }
+    return JsonResponse({'succ': True, 'token': jwt_token, 'user_info': user_info})
 
 
 def signup(request):
