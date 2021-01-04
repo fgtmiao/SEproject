@@ -17,7 +17,7 @@
       <!--他的帖子-->
       <span v-if='ismine'>我的帖子</span>
       <span v-else>TA的帖子</span>
-      <div class="CardList"  infinite-scroll-disabled="busy" >
+      <div class="CardList" infinite-scroll-disabled="busy">
         <el-row class="cardrow">
           <div v-for="(post,index) in posts" :key='post.index'>
             <el-card class="Showcard" :body-style="{ padding:'0px' }">
@@ -38,8 +38,8 @@
                   <li class="imgbox"><img class="image" :src="post.images[0]" /></li>
                 </div>
                 <div>
-                <p class="pid">#{{post.pid}}</p>
-                <time class="time">{{ post.time }}</time>
+                  <p class="pid">#{{post.pid}}</p>
+                  <time class="time">{{ post.time }}</time>
                 </div>
                 <!--icon&location here-->
                 <!--i class="el-icon-location-information"></i>
@@ -51,39 +51,23 @@
         </el-row>
       </div>
     </div>
-        <!--上传图像dialog-->
-      <el-dialog title="上传头像"
-               :visible.sync="dialogVisible"
-               width="30%">
+    <!--上传图像dialog-->
+    <el-dialog title="上传头像" :visible.sync="dialogVisible" width="30%">
       <el-form :model="form">
-        <el-form-item :label-width="formLabelWidth"
-                      ref="uploadElement">
-          <el-upload ref="upload"
-                     action="#"
-                     accept="image/png,image/gif,image/jpg,image/jpeg"
-                     list-type="picture-card"
-                     :limit="limitNum"
-                     :auto-upload="false"
-                     :on-exceed="handleExceed"
-                     :before-upload="handleBeforeUpload"
-                     :on-preview="handlePictureCardPreview"
-                     :on-remove="handleRemove"
-                     :on-change="imgChange"
-                     :class="{hide:hideUpload}">
+        <el-form-item :label-width="formLabelWidth" ref="uploadElement">
+          <el-upload ref="upload" action="#" accept="image/png,image/gif,image/jpg,image/jpeg" list-type="picture-card"
+            :limit="limitNum" :auto-upload="false" :on-exceed="handleExceed" :before-upload="handleBeforeUpload"
+            :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-change="imgChange"
+            :class="{hide:hideUpload}">
             <i class="el-icon-plus"></i>
           </el-upload>
           <el-dialog :visible.sync="dialogVisible2">
-            <img width="100%"
-                 :src="dialogImageUrl"
-                 alt="">
+            <img width="100%" :src="dialogImageUrl" alt="">
           </el-dialog>
         </el-form-item>
         <el-form-item>
-          <el-button size="small"
-                     type="primary"
-                     @click="uploadFile">上传</el-button>
-          <el-button size="small"
-                     @click="tocancel">取消</el-button>
+          <el-button size="small" type="primary" @click="uploadFile">上传</el-button>
+          <el-button size="small" @click="tocancel">取消</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -92,25 +76,25 @@
 
 <script>
   //for header
-import Qs from 'qs'
-import axios from "axios"
+  import Qs from 'qs'
+  import axios from "axios"
   export default {
     data() {
 
       return {
-        default_avater:"https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
+        default_avater: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         ismine: true,
         tmp_username: "",
         activeIndex2: '1',
-        busy:true,
+        busy: true,
 
         hideUpload: false,
         dialogImageUrl: '',
-        dialogVisible: false,//上传窗口
+        dialogVisible: false, //上传窗口
         formLabelWidth: '80px',
         limitNum: 1,
         form: {},
-        dialogVisible2: false,//图片预览弹窗
+        dialogVisible2: false, //图片预览弹窗
 
         searchbar: {
           input: '',
@@ -124,7 +108,7 @@ import axios from "axios"
         var tmp_username = localStorage.getItem('tmp_username');
         var fromname = this.$route.query.username;
         this.ismine = (tmp_username == fromname);
-        console.log(tmp_username,fromname);
+        console.log(tmp_username, fromname);
         this.tmp_username = fromname;
       },
 
@@ -141,63 +125,64 @@ import axios from "axios"
       },
 
       //上传头像
-      handleBeforeUpload (file) {
-      console.log("handleBeforeUpload");
-      if (!(file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/jpg' || file.type === 'image/jpeg')) {
-        this.$notify.warning({
-          title: 'warning',
-          message: '请上传格式为image/png, image/gif, image/jpg, image/jpeg的图片'
+      handleBeforeUpload(file) {
+        console.log("handleBeforeUpload");
+        if (!(file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/jpg' || file.type ===
+            'image/jpeg')) {
+          this.$notify.warning({
+            title: 'warning',
+            message: '请上传格式为image/png, image/gif, image/jpg, image/jpeg的图片'
+          })
+        }
+        let size = file.size / 1024 / 1024 / 2
+        if (size > 2) {
+          this.$notify.warning({
+            title: 'warning',
+            message: '图片大小必须小于2M'
+          })
+        }
+
+        let fd = new FormData();
+        fd.append("image", file); //传文件
+        fd.append('type', 'change_user_fig');
+        fd.append('jwt', localStorage.getItem('token'));
+        console.log("before axios");
+        axios({
+          url: "userinfo",
+          method: "post",
+          data: fd,
+        }).then((res) => {
+          console.log("uploadresis", res);
+          dialogVisible2 = false;
+          dialogVisible = false;
+        }).catch((err) => {
+          console.log(err);
         })
-      }
-      let size = file.size / 1024 / 1024 / 2
-      if (size > 2) {
-        this.$notify.warning({
-          title: 'warning',
-          message: '图片大小必须小于2M'
-        })
-      }
+      },
+      handleExceed(files, fileList) {
 
-      let fd = new FormData();
-      fd.append("image", file); //传文件
-      fd.append('type','change_user_fig');
-      fd.append('jwt', localStorage.getItem('token'));
-      console.log("before axios");
-      axios({
-        url: "userinfo",
-        method: "post",
-        data: fd,
-      }).then((res) => {
-        console.log("uploadresis",res);
-        dialogVisible2=false;
-        dialogVisible=false;
-      }).catch((err)=>{
-        console.log(err);
-      })
-    },
-    handleExceed (files, fileList) {
+      },
+      handleRemove(file, fileList) {
+        this.hideUpload = fileList.length >= this.limitNum;
 
-    },
-    handleRemove (file, fileList) {
-      this.hideUpload = fileList.length >= this.limitNum;
+      },
+      handlePictureCardPreview(file) {
+        this.dialogImageUrl = file.url;
+        this.dialogVisible2 = true;
+      },
+      uploadFile() {
+        this.$refs.upload.submit()
 
-    },
-    handlePictureCardPreview (file) {
-      this.dialogImageUrl = file.url;
-      this.dialogVisible2 = true;
-    },
-    uploadFile () {
-      this.$refs.upload.submit()
-
-    },
-    imgChange (files, fileList) {
-      this.hideUpload = fileList.length >= this.limitNum;
-      if (fileList) {
-        this.$refs.uploadElement.clearValidate();
-      }
-    },
-    tocancel () {
-      this.dialogVisible = false
-    },
+      },
+      imgChange(files, fileList) {
+        this.hideUpload = fileList.length >= this.limitNum;
+        if (fileList) {
+          this.$refs.uploadElement.clearValidate();
+        }
+      },
+      tocancel() {
+        this.dialogVisible = false
+      },
       add_posts(posts_list) {
         // console.log(posts_list);
         for (var post of posts_list) {
@@ -214,43 +199,43 @@ import axios from "axios"
       },
 
     },
-    mounted:function(){//获取用户信息和用户的帖子list
-        this.validateMine();
-        var datas = {
-          'type': 'get_user_info'
-        };
-        //获取头像信息
-        datas['user_name']=this.tmp_username;
-        var params = Qs.stringify(datas);
-        console.log(datas);
-        axios({
-            url: 'userinfo',
-            method: 'post',
-            data: params
-          }).then((res)=>{
-            console.log(res);
-            if(res.data.user_info.user_fig){
-              this.default_avater=res.data.user_info.user_fig;
-            }
-          }).catch((err)=>{
-            console.log(err);
-          })
-        //获取用户的帖子list
-        var datas = {
-          'type': 'view_posts',
-          'user_name':this.tmp_username
-        };
-        var params = Qs.stringify(datas);
-          axios({
-            url: 'index',
-            method: 'post',
-            data: params
-          }).then((res)=>{
-            console.log(res);
-            this.add_posts(res.data.post_info_list);
-          }).catch((err)=>{
-            console.log(err);
-          })
+    mounted: function () { //获取用户信息和用户的帖子list
+      this.validateMine();
+      var datas = {
+        'type': 'get_user_info'
+      };
+      //获取头像信息
+      datas['user_name'] = this.tmp_username;
+      var params = Qs.stringify(datas);
+      console.log(datas);
+      axios({
+        url: 'userinfo',
+        method: 'post',
+        data: params
+      }).then((res) => {
+        console.log(res);
+        if (res.data.user_info.user_fig) {
+          this.default_avater = res.data.user_info.user_fig;
+        }
+      }).catch((err) => {
+        console.log(err);
+      })
+      //获取用户的帖子list
+      var datas = {
+        'type': 'view_posts',
+        'user_name': this.tmp_username
+      };
+      var params = Qs.stringify(datas);
+      axios({
+        url: 'index',
+        method: 'post',
+        data: params
+      }).then((res) => {
+        console.log(res);
+        this.add_posts(res.data.post_info_list);
+      }).catch((err) => {
+        console.log(err);
+      })
     }
   }
 
@@ -281,8 +266,8 @@ import axios from "axios"
 
 
   .CardList {
-    height:800px;
-    overflow-y:auto;
+    height: 800px;
+    overflow-y: auto;
   }
 
   .Showcard {
@@ -311,7 +296,9 @@ import axios from "axios"
     vertical-align: middle;
 
   }
-.hide .el-upload--picture-card {
-  display: none;
-}
+
+  .hide .el-upload--picture-card {
+    display: none;
+  }
+
 </style>

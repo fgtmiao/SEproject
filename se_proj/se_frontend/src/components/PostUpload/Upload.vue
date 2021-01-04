@@ -38,14 +38,13 @@
       </el-select>
       <!--这里就直接列出所有动物吧，怎么上传位置啊-->
 
-<div>
-  <span>请点击地图选择小动物出没位置(位置不明可跳过)</span>
-  <div class="map" style="background-color: #FFFFFF;">
-    <canvas id="myCanvas" ref="myCanvas"
-            width="1500" height="1000" @mousedown="mousedown" @mouseup="mouseup">
-    </canvas>
-  </div>
-</div>
+      <div>
+        <span>请点击地图选择小动物出没位置(位置不明可跳过)</span>
+        <div class="map" style="background-color: #FFFFFF;">
+          <canvas id="myCanvas" ref="myCanvas" width="1500" height="1000" @mousedown="mousedown" @mouseup="mouseup">
+          </canvas>
+        </div>
+      </div>
       <el-button @click="submit()">
         发布
       </el-button>
@@ -96,9 +95,9 @@
           label: '鱼'
         }],
         value: [],
-        position:{
-        x: -1,
-        y: -1
+        position: {
+          x: -1,
+          y: -1
         },
       };
     },
@@ -164,13 +163,13 @@
         }
         return arr;
       },
-      chooseLocation(){//标记一下是否选了？
-          this.$router.push({
-            path: '/uploadLocation',
-            query: {
+      chooseLocation() { //标记一下是否选了？
+        this.$router.push({
+          path: '/uploadLocation',
+          query: {
 
-            }
-          })
+          }
+        })
       },
       submit() {
         console.log(this.description);
@@ -202,8 +201,8 @@
           UploadFD.append('jwt', localStorage.getItem('token'));
           UploadFD.append('post[description]', this.description);
           UploadFD.append('post[animal_class]', this.value);
-          if(this.position.x!=-1){//upload position&uploadtype
-            UploadFD.append('post[position]', [this.position.x,this.position.y]);
+          if (this.position.x != -1) { //upload position&uploadtype
+            UploadFD.append('post[position]', [this.position.x, this.position.y]);
           }
           for (let i = 0; i < this.fileLists.length; i++) {
             UploadFD.append('post[image]', this.fileLists[i].raw, this.fileLists[i].uid);
@@ -235,36 +234,36 @@
             });
         }
       },
-            mousedown(e){
+      mousedown(e) {
         console.log("鼠标落下");
         // this.flag = true;
         this.position.x = e.offsetX; // 鼠标落下时的X
         this.position.y = e.offsetY; // 鼠标落下时的Y
       },
-      mouseup(e){
+      mouseup(e) {
         // console.log("鼠标抬起");
         // this.flag = false;
         this.drawRect(e);
       },
-      drawRect(e){
+      drawRect(e) {
         // if(this.flag){
         //   console.log("绘制图形");
-          const canvas = this.$refs.myCanvas;
-          var ctx = canvas.getContext("2d");
-          let x = this.position.x;
-          let y = this.position.y;
- 
-          ctx.clearRect(0,0,canvas.width,canvas.height);
+        const canvas = this.$refs.myCanvas;
+        var ctx = canvas.getContext("2d");
+        let x = this.position.x;
+        let y = this.position.y;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         //   ctx.beginPath();
- 
+
         //   //设置线条颜色，必须放在绘制之前
-          ctx.strokeStyle = '#ff0000';
+        ctx.strokeStyle = '#ff0000';
         //   // 线宽设置，必须放在绘制之前
-          ctx.lineWidth = 2;
+        ctx.lineWidth = 2;
         //左上角+宽高
-          // ctx.arc(circle.x, circle.y, circle.r, 0, Math.PI / 2, false);
-          ctx.strokeRect(Math.max(x-10,0),Math.max(y-10,0),20,20);
-          
+        // ctx.arc(circle.x, circle.y, circle.r, 0, Math.PI / 2, false);
+        ctx.strokeRect(Math.max(x - 10, 0), Math.max(y - 10, 0), 20, 20);
+
         // }
       }
     }
@@ -273,12 +272,14 @@
 </script>
 
 <style scoped>
-  #myCanvas{
+  #myCanvas {
     background-color: forestgreen;
-    background-image:url('../../assets/map2.jpg');
-    background-size:100%;
+    background-image: url('../../assets/map2.jpg');
+    background-size: 100%;
   }
-  .map{
-    padding-top:20px;
+
+  .map {
+    padding-top: 20px;
   }
+
 </style>

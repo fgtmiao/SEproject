@@ -24,21 +24,21 @@
           </div>
         </div>
       </div>
-        <div>
-          <el-button class="location-btn" @click="showLocation()">位置<i class="el-icon-location"></i></el-button>
-        </div>
+      <div>
+        <el-button class="location-btn" @click="showLocation()">位置<i class="el-icon-location"></i></el-button>
+      </div>
       <div class="bottom clearfix">
         <p class="pid">#{{postDetail.pid}}</p>
-        <time class="time">{{postDetail.time}}</time>     
+        <time class="time">{{postDetail.time}}</time>
       </div>
 
-      
+
     </el-card>
 
     <!--comment test here-->
 
     <el-card>
-    <!--comment Box-->
+      <!--comment Box-->
       <div class="my-reply">
         <el-avatar class="header-img" :size="40" :src="avatar_dict[myName]"></el-avatar>
         <div class="reply-info">
@@ -48,12 +48,12 @@
           <el-button class="reply-btn" size="medium" @click="send_comment()" type="primary">发表评论</el-button>
         </div>
       </div>
-    <!--comments-->
+      <!--comments-->
       <div v-for="(item,i) in comments" :key="i" class="author-title">
         <el-card>
           <div class="comment-header" @click="showUserDetail(item.user_name)">
-          <el-avatar class="header-img" :size="40" :src="avatar_dict[item.user_name]"></el-avatar>
-          <span class="name">{{item.user_name}}</span>
+            <el-avatar class="header-img" :size="40" :src="avatar_dict[item.user_name]"></el-avatar>
+            <span class="name">{{item.user_name}}</span>
           </div>
 
           <div class="talk-box">
@@ -84,8 +84,8 @@
         imgSrcList: [],
         postDetail: {},
 
-        avatar_dict:new Array(),
-        default_avater:'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
+        avatar_dict: new Array(),
+        default_avater: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
         btnShow: true,
         index: '0',
         replyComment: '',
@@ -113,7 +113,7 @@
             if (res.data.succ) {
               console.log('succ', res.data);
               this.set_postDetail(res.data.post_info_list[0]);
-              this.get_replies(this.$route.query.pid);//执行完毕之后回调
+              this.get_replies(this.$route.query.pid); //执行完毕之后回调
             } else {
               console.log("res_error", res);
             }
@@ -176,7 +176,7 @@
                 console.log('succ', res.data);
                 this.get_replies(this.$route.query.pid);
                 //清空输入框
-                this.replyComment="";
+                this.replyComment = "";
               } else {
                 console.log("res_error", res);
               }
@@ -203,7 +203,7 @@
 
       set_replyDetail(replies) {
         console.log(replies);
-        this.comments=[];
+        this.comments = [];
         for (var reply of replies) {
           var images_list = '';
           if (reply.image_src) image_list = reply.image_src.split(',');
@@ -218,64 +218,60 @@
         console.log(this.comments);
       },
 
-      get_avatars()//axios请求所有的头像
+      get_avatars() //axios请求所有的头像
       {
-        this.avatar_dict={};
-        var name_list=[];
+        this.avatar_dict = {};
+        var name_list = [];
         var that = this;
         name_list.push(this.postDetail.user_name);
-        console.log("post owner username",that.postDetail.user_name);
+        console.log("post owner username", that.postDetail.user_name);
         console.log(that.postDetail);
-        if(!name_list.includes(this.myName))
-        {
+        if (!name_list.includes(this.myName)) {
           name_list.push(this.myName);
-        } 
-        for(let comment of this.comments){
-          if(!name_list.includes(comment.user_name)){
+        }
+        for (let comment of this.comments) {
+          if (!name_list.includes(comment.user_name)) {
             name_list.push(comment.user_name);
           }
         }
         console.log(name_list);
-        for(let name of name_list)
-        {
+        for (let name of name_list) {
           //如果刷新出的是没有头像缓存的用户
           // console.log(post.user_name,that.avatar_dict)
-          if(!that.avatar_dict.hasOwnProperty(name))
-          {
-            console.log(name,"not in dict")
+          if (!that.avatar_dict.hasOwnProperty(name)) {
+            console.log(name, "not in dict")
             var datas = {
               'type': 'get_user_info'
             };
             //用户头像信息
-            datas['user_name']=name;
+            datas['user_name'] = name;
             var params = Qs.stringify(datas);
             axios({
-                url: 'userinfo',
-                method: 'post',
-                data: params
-              }).then((res)=>{
-                console.log(res);
-                if(res.data.user_info.user_fig){
-                  // console.log("set",post.user_name,res.data.user_info.user_fig)
-                  that.$set(that.avatar_dict,name,res.data.user_info.user_fig);
-                }
-                else{
-                that.$set(that.avatar_dict,name,that.default_avater);  
-                }
-              }).catch((err)=>{
-                console.log("err",err);
-                that.$set(that.avatar_dict,name,that.default_avater);
-              })
+              url: 'userinfo',
+              method: 'post',
+              data: params
+            }).then((res) => {
+              console.log(res);
+              if (res.data.user_info.user_fig) {
+                // console.log("set",post.user_name,res.data.user_info.user_fig)
+                that.$set(that.avatar_dict, name, res.data.user_info.user_fig);
+              } else {
+                that.$set(that.avatar_dict, name, that.default_avater);
+              }
+            }).catch((err) => {
+              console.log("err", err);
+              that.$set(that.avatar_dict, name, that.default_avater);
+            })
           }
         }
       },
-      showUserDetail(name){
+      showUserDetail(name) {
         this.$router.push({
-            path: '/userinfo',
-            query: {
-              "username": name,
-              // "type": key
-            }
+          path: '/userinfo',
+          query: {
+            "username": name,
+            // "type": key
+          }
         })
       },
       goBack() {
@@ -305,19 +301,18 @@
       },
 
 
-      showLocation()
-      {
+      showLocation() {
         var _this = this;
-        if(this.postDetail.position){
+        if (this.postDetail.position) {
           console.log(this.postDetail.position)
           this.$router.push({
             path: '/showLocation',
             query: {
-              "position":this.postDetail.position
+              "position": this.postDetail.position
             }
           })
         }
-    }
+      }
     },
 
     mounted: function () {
@@ -337,10 +332,12 @@
     width: 60%;
     display: table-cell;
   }
-  .Postcard{
-    
-    margin-bottom:20px;
+
+  .Postcard {
+
+    margin-bottom: 20px;
   }
+
   .covers {
     display: flex;
     justify-content: space-between;
@@ -371,6 +368,7 @@
     font-size: 13px;
     color: #999;
   }
+
   .my-reply {
     padding: 10px;
     background-color: #fafbfc
@@ -380,11 +378,13 @@
     display: inline-block;
     vertical-align: top;
   }
-  .comment-header{
-    float:left;
-    margin-top:10px;
-    display:block;
+
+  .comment-header {
+    float: left;
+    margin-top: 10px;
+    display: block;
   }
+
   .reply-info {
     display: inline-block;
     margin-left: 5px;
@@ -396,23 +396,28 @@
     height: 25px;
     margin: 10px 0;
   }
-  .location-btn{
-    margin-bottom:10px;
+
+  .location-btn {
+    margin-bottom: 10px;
   }
+
   .reply-btn {
     position: relative;
     margin-right: 15px
   }
-  .name{
-    padding:10px 10px;
+
+  .name {
+    padding: 10px 10px;
     font-size: 20px;
   }
+
   .author-title {
     padding: 10px;
   }
-  .reply-input
-  {
-    style.padding:8px 8px;
-    border:2px,solid blue;
+
+  .reply-input {
+    style.padding: 8px 8px;
+    border: 2px, solid blue;
   }
+
 </style>
