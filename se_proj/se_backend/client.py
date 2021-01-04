@@ -93,7 +93,14 @@ def main():
     res = requests.post(url=index_url, data=post_params)
     print('正文内容检索帖子 返回结果: %s' % res.text)
 
-    # 9. 模拟回复
+    # 9. 模拟根据用户名检索帖子
+    post_params = {
+        'type': 'view_posts', 'user_name': 'fgtmiao'
+    }
+    res = requests.post(url=index_url, data=post_params)
+    print('作者用户名检索帖子 返回结果: %s' % res.text)
+
+    # 10. 模拟回复
     post_params = {
         'type': 'comment_post', 'jwt': jwt,
         'reply[post]': postid, 'reply[description]': '创世回复'
@@ -101,21 +108,21 @@ def main():
     res = requests.post(url=index_url, data=post_params)
     print('模拟回复 返回结果: %s' % (res.text))
 
-    # 10. 模拟读取回复
+    # 11. 模拟读取回复
     post_params = {
         'type': 'view_replies', 'pid': postid
     }
     res = requests.post(url=index_url, data=post_params)
     print('模拟读取回复 返回结果: %s' % (res.text))
 
-    # 11. 模拟检索一种类型的动物的最近位置
+    # 12. 模拟检索一种类型的动物的最近位置
     post_params = {
         'type': 'get_location', 'animal_class': 'bird-swan'     # 当然用'bird-swan'这个类别全名检索也是可以的
     }
     res = requests.post(url=index_url, data=post_params)
     print('模拟获取位置 返回结果: %s' % (res.text))
 
-    # 12. 退出登录
+    # 13. 退出登录
     post_params = {
         'type': 'signout', 'jwt': jwt,
     }
