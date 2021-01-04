@@ -94,15 +94,21 @@ def view_posts(request):
     POST params:
         [optional] start_index: int, 要获取的post中pid最大的一个。默认为数据库所有post中最大的pid
         [optional] post_num: int, 要获取的帖子数量。默认为20，不能大于100
+
+        以下字段如果同时使用多个，则使用and布尔逻辑检索，返回符合所有字段要求的记录
         [optional] animal_class: str, 根据动物类型检索
-        [optional] position: str, 根据地理位置检索，目前的实现方式是
+        [optional] position: str, 根据地理位置检索，目前的实现方式是字符串匹配，如果数据库中的地址包含本字段的内容则返回该帖子
         [optional] description: str, 根据帖子内容检索
+        [optional] user_name: str, 根据发帖人的用户名检索
+        [optional] uid: int, 根据发帖人的uid检索
     '''
     start_index = int(request.POST.get('start_index', default=-1))
     post_num = int(request.POST.get('post_num', default=20))
     animal_class = request.POST.get('animal_class')
     position = request.POST.get('position')
     description = request.POST.get('description')
+    user_name = request.POST.get('user_name')
+    uid = int(request.POST.get('uid', default=-1))
 
     if post_num > 100:
         return JsonResponse({'succ': False, 'errmsg': 'requset post_num should not be larger than 100'})
@@ -115,6 +121,15 @@ def view_posts(request):
         post_query_set = post_query_set.filter(position=position)
     if description:
         post_query_set = post_query_set.filter(description__contains=description)
+    if user_name:
+        try:
+            user = User.objects.get(user_name=user_name)
+            post_query_set = post_query_set.filter(publisher=user.uid)
+        except (django.core.exceptions.ObjectDoesNotExist, django.core.exceptions.MultipleObjectsReturned):
+            print('user_name %s does not exist' % user_name)
+    if uid != -1:
+        post_query_set = post_query_set.filter(publisher=uid)
+
     post_query_set = post_query_set.order_by(F('pid').desc())
 
     # 从query_set中取出前n个结果并返回
