@@ -13,6 +13,7 @@ import UserInfo from "@/components/UserInfo/userinfo_display.vue"
 
 import Baike from "@/components/baike/baike.vue"
 import showLocation from "@/components/PostDetail/showLocation.vue"
+import searchRes from "@/components/PostBrowse/searchRes.vue"
 
 Vue.use(Router)
 
@@ -75,6 +76,14 @@ export default new Router({
         requireauth: true, // 判断是否需要登录
       },
       component: showLocation
+    },
+    {
+      path: '/searchRes',
+      name: 'searchRes',
+      meta: {
+        requireauth: true, // 判断是否需要登录
+      },
+      component: searchRes
     },
   ]
 })

@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <div>
       <!--header-->
       <el-page-header @back="goBack" content="帖子详情">
@@ -8,9 +7,9 @@
       <!--post detail-->
     </div>
 
-    <el-card class="Postcard" :body-style="{ padding: '30px' }">
+    <el-card class="Postcard" :body-style="{padding: '30px'}">
       <div @click="getUserInfo()">
-        <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+        <el-avatar :src="avatar_dict[postDetail.user_name]"></el-avatar>
         <span>{{postDetail.user_name}}</span>
       </div>
 
@@ -22,94 +21,50 @@
               <el-image :src="img" width="90%" class="min" :lazy="true" :preview-src-list="getPreviewImgList(index)">
               </el-image>
             </div>
-            <!--div v-for="image in postDetail.images" :key="image.value" class="imgbox"><img class="image" v-bind:src="image"></div-->
           </div>
         </div>
       </div>
-
+        <div>
+          <el-button class="location-btn" @click="showLocation()">位置<i class="el-icon-location"></i></el-button>
+        </div>
       <div class="bottom clearfix">
         <p class="pid">#{{postDetail.pid}}</p>
-        <time class="time">{{postDetail.time}}</time>
-        <!--el-button type="text" class="button">帖子详情</el-button-->
+        <time class="time">{{postDetail.time}}</time>     
       </div>
-      <div>
-        <el-button>点赞num</el-button>
-        <el-button @click="showLocation()">位置</el-button>
-      </div>
+
+      
     </el-card>
 
     <!--comment test here-->
 
     <el-card>
-      this is the comment card
-      <div @click="inputFocus" class="my-reply">
-        <el-avatar class="header-img" :size="40" :src="myHeader"></el-avatar>
+    <!--comment Box-->
+      <div class="my-reply">
+        <el-avatar class="header-img" :size="40" :src="avatar_dict[myName]"></el-avatar>
         <div class="reply-info">
-          <div v-model="replyComment" tabindex="0" contenteditable="true" id="replyInput" spellcheck="false"
-            placeholder="输入评论..." class="reply-input" @focus="showReplyBtn" @input="onDivInput($event)">
-          </div>
+          <el-input placeholder="输入评论..." v-model="replyComment" autocomplete="off" class="reply-input"></el-input>
         </div>
         <div class="reply-btn-box" v-show="btnShow">
-          <el-button class="reply-btn" size="medium" @click="send_comment" type="primary">发表评论</el-button>
+          <el-button class="reply-btn" size="medium" @click="send_comment()" type="primary">发表评论</el-button>
         </div>
       </div>
-
-      <div v-for="(item,i) in comments" :key="i" class="author-title reply-father">
-        <el-avatar class="header-img" :size="40" :src="item.headImg"></el-avatar>
-        <div class="author-info">
-          <span class="author-name">{{item.user_name}}</span>
-          <span class="author-time">{{item.time}}</span>
-        </div>
-        <div class="icon-btn">
-          <span @click="showReplyInput(i,item.name,item.id)"><i
-              class="iconfont el-icon-s-comment"></i>{{item.commentNum}}</span>
-          <i class="iconfont el-icon-caret-top"></i>{{item.like}}
-        </div>
-        <div class="talk-box">
-          <p>
-            <span class="reply">{{item.comment}}</span>
-          </p>
-        </div>
-        <div class="reply-box">
-          <div v-for="(reply,j) in item.reply" :key="j" class="author-title">
-            <el-avatar class="header-img" :size="40" :src="reply.fromHeadImg"></el-avatar>
-            <div class="author-info">
-              <span class="author-name">{{reply.from}}</span>
-              <span class="author-time">{{reply.time}}</span>
-            </div>
-            <div class="icon-btn">
-              <span @click="showReplyInput(i,reply.from,reply.id)"><i
-                  class="iconfont el-icon-s-comment"></i>{{reply.commentNum}}</span>
-              <i class="iconfont el-icon-caret-top"></i>{{reply.like}}
-            </div>
-            <div class="talk-box">
-              <p>
-                <span>回复 {{reply.to}}:</span>
-                <span class="reply">{{reply.comment}}</span>
-              </p>
-            </div>
-            <div class="reply-box">
-
-            </div>
+    <!--comments-->
+      <div v-for="(item,i) in comments" :key="i" class="author-title">
+        <el-card>
+          <div class="comment-header" @click="showUserDetail(item.user_name)">
+          <el-avatar class="header-img" :size="40" :src="avatar_dict[item.user_name]"></el-avatar>
+          <span class="name">{{item.user_name}}</span>
           </div>
-        </div>
-        <div v-show="_inputShow(i)" class="my-reply my-comment-reply">
-          <el-avatar class="header-img" :size="40" :src="myHeader"></el-avatar>
-          <div class="reply-info">
-            <div tabindex="0" contenteditable="true" spellcheck="false" placeholder="输入评论..."
-              @input="onDivInput($event)" class="reply-input reply-comment-input"></div>
-          </div>
-          <div class=" reply-btn-box">
-            <el-button class="reply-btn" size="medium" @click="sendCommentReply(i,j)" type="primary">发表评论</el-button>
-          </div>
-        </div>
 
+          <div class="talk-box">
+            <p>
+              <span class="reply">{{item.comment}}</span>
+            </p>
+          </div>
+          <span class="time">{{item.time}}</span>
+        </el-card>
       </div>
     </el-card>
-
-
-
-  </div>
   </div>
 </template>
 
@@ -129,13 +84,13 @@
         imgSrcList: [],
         postDetail: {},
 
-        //for comment test
-        btnShow: false,
+        avatar_dict:new Array(),
+        default_avater:'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
+        btnShow: true,
         index: '0',
         replyComment: '',
-        myName: 'name1',
-        myHeader: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-        myId: 1,
+        myName: localStorage.getItem('tmp_username'),
+
         to: '',
         toId: -1,
         comments: []
@@ -158,6 +113,7 @@
             if (res.data.succ) {
               console.log('succ', res.data);
               this.set_postDetail(res.data.post_info_list[0]);
+              this.get_replies(this.$route.query.pid);//执行完毕之后回调
             } else {
               console.log("res_error", res);
             }
@@ -182,6 +138,7 @@
             if (res.data.succ) {
               console.log('succ', res.data);
               this.set_replyDetail(res.data.reply_info_list);
+              this.get_avatars();
             } else {
               console.log("res_error", res);
             }
@@ -218,6 +175,8 @@
               if (res.data.succ) {
                 console.log('succ', res.data);
                 this.get_replies(this.$route.query.pid);
+                //清空输入框
+                this.replyComment="";
               } else {
                 console.log("res_error", res);
               }
@@ -235,22 +194,7 @@
         this.postDetail.images = [];
         let image_list = [];
         if (post.image_src) this.postDetail.images = post.image_src.split(',');
-        //是要加个require吧
-        // console.log(post.image_src)
 
-        // if (post.image_src) {
-        //   image_list = post.image_src.split(',');
-
-        //   };
-        // console.log("imagelist",image_list);  
-
-
-        // for(let i=0;i < image_list.length;i++)
-        // {
-        //   let dic = {"src":require(image_list[i])};
-        //   console.log("dic",dic)
-        //   this.postDetail.images.push(dic);
-        // }
         this.postDetail.time = new Date(post.timestamp * 1000);
         // 必须用$set才能提醒视图更新内容，不然视图是检测不到data中对象的某个属性发生更新的
         this.$set(this.postDetail, 'user_name', post.user_name);
@@ -259,6 +203,7 @@
 
       set_replyDetail(replies) {
         console.log(replies);
+        this.comments=[];
         for (var reply of replies) {
           var images_list = '';
           if (reply.image_src) image_list = reply.image_src.split(',');
@@ -273,14 +218,70 @@
         console.log(this.comments);
       },
 
-
-      goBack() {
+      get_avatars()//axios请求所有的头像
+      {
+        this.avatar_dict={};
+        var name_list=[];
+        var that = this;
+        name_list.push(this.postDetail.user_name);
+        console.log("post owner username",that.postDetail.user_name);
+        console.log(that.postDetail);
+        if(!name_list.includes(this.myName))
+        {
+          name_list.push(this.myName);
+        } 
+        for(let comment of this.comments){
+          if(!name_list.includes(comment.user_name)){
+            name_list.push(comment.user_name);
+          }
+        }
+        console.log(name_list);
+        for(let name of name_list)
+        {
+          //如果刷新出的是没有头像缓存的用户
+          // console.log(post.user_name,that.avatar_dict)
+          if(!that.avatar_dict.hasOwnProperty(name))
+          {
+            console.log(name,"not in dict")
+            var datas = {
+              'type': 'get_user_info'
+            };
+            //用户头像信息
+            datas['user_name']=name;
+            var params = Qs.stringify(datas);
+            axios({
+                url: 'userinfo',
+                method: 'post',
+                data: params
+              }).then((res)=>{
+                console.log(res);
+                if(res.data.user_info.user_fig){
+                  // console.log("set",post.user_name,res.data.user_info.user_fig)
+                  that.$set(that.avatar_dict,name,res.data.user_info.user_fig);
+                }
+                else{
+                that.$set(that.avatar_dict,name,that.default_avater);  
+                }
+              }).catch((err)=>{
+                console.log("err",err);
+                that.$set(that.avatar_dict,name,that.default_avater);
+              })
+          }
+        }
+      },
+      showUserDetail(name){
         this.$router.push({
-          path: '/mainposts',
-          query: {}
+            path: '/userinfo',
+            query: {
+              "username": name,
+              // "type": key
+            }
         })
       },
-
+      goBack() {
+        this.$router.go(-1);
+      },
+      //for preview
       getPreviewImgList(index) {
         let arr = []
         let i = 0;
@@ -303,90 +304,7 @@
         }) //tmp user id
       },
 
-      inputFocus() {
-        var replyInput = document.getElementById('replyInput');
-        replyInput.style.padding = "8px 8px"
-        replyInput.style.border = "2px solid blue"
-        replyInput.focus()
-      },
 
-      showReplyBtn() {
-        this.btnShow = true
-      },
-
-      hideReplyBtn() {
-        this.btnShow = false
-        replyInput.style.padding = "10px"
-        replyInput.style.border = "none"
-      },
-
-      showReplyInput(i, name, id) {
-        this.comments[this.index].inputShow = false
-        this.index = i
-        this.comments[i].inputShow = true
-        this.to = name
-        this.toId = id
-      },
-
-      _inputShow(i) {
-        return this.comments[i].inputShow
-      },
-
-      sendCommentReply(i, j) {
-        if (!this.replyComment) {
-          this.$message({
-            showClose: true,
-            type: 'warning',
-            message: '评论不能为空'
-          })
-        } else {
-          let a = {}
-          let timeNow = new Date().getTime();
-          let time = this.dateStr(timeNow);
-          a.from = this.myName
-          a.to = this.to
-          a.fromHeadImg = this.myHeader
-          a.comment = this.replyComment
-          a.time = time
-          a.commentNum = 0
-          a.like = 0
-          this.comments[i].reply.push(a)
-          this.replyComment = ''
-          document.getElementsByClassName("reply-comment-input")[i].innerHTML = ""
-        }
-      },
-
-      onDivInput: function (e) {
-        this.replyComment = e.target.innerHTML;
-      },
-
-      dateStr(date) {
-        //获取js 时间戳
-        var time = new Date().getTime();
-        //去掉 js 时间戳后三位，与php 时间戳保持一致
-        time = parseInt((time - date) / 1000);
-        //存储转换值 
-        var s;
-        if (time < 60 * 10) { //十分钟内
-          return '刚刚';
-        } else if ((time < 60 * 60) && (time >= 60 * 10)) {
-          //超过十分钟少于1小时
-          s = Math.floor(time / 60);
-          return s + "分钟前";
-        } else if ((time < 60 * 60 * 24) && (time >= 60 * 60)) {
-          //超过1小时少于24小时
-          s = Math.floor(time / 60 / 60);
-          return s + "小时前";
-        } else if ((time < 60 * 60 * 24 * 30) && (time >= 60 * 60 * 24)) {
-          //超过1天少于30天内
-          s = Math.floor(time / 60 / 60 / 24);
-          return s + "天前";
-        } else {
-          //超过30天ddd
-          var date = new Date(parseInt(date));
-          return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
-        }
-      },
       showLocation()
       {
         var _this = this;
@@ -402,10 +320,11 @@
     }
     },
 
-    created: function () {
+    mounted: function () {
       console.log('created pid: ', this.$route.query.pid);
       this.get_post(this.$route.query.pid);
-      this.get_replies(this.$route.query.pid);
+
+      // this.get_avatars();
     },
 
 
@@ -418,7 +337,10 @@
     width: 60%;
     display: table-cell;
   }
-
+  .Postcard{
+    
+    margin-bottom:20px;
+  }
   .covers {
     display: flex;
     justify-content: space-between;
@@ -436,22 +358,12 @@
     margin: 5px 0px;
   }
 
-  .min {
-    border-radius: 10px;
-    cursor: zoom-in;
-  }
-
-  .max {
-    cursor: zoom-out;
-    width: 100%;
-  }
-
   .pid {
     font-size: 13px;
     color: #999;
     position: absolute;
     left: 10px;
-    bottom: 5px;
+    // bottom: 5px;
     margin: 0px;
   }
 
@@ -459,9 +371,6 @@
     font-size: 13px;
     color: #999;
   }
-
-  //for cpmment
-
   .my-reply {
     padding: 10px;
     background-color: #fafbfc
@@ -471,7 +380,11 @@
     display: inline-block;
     vertical-align: top;
   }
-
+  .comment-header{
+    float:left;
+    margin-top:10px;
+    display:block;
+  }
   .reply-info {
     display: inline-block;
     margin-left: 5px;
@@ -483,31 +396,23 @@
     height: 25px;
     margin: 10px 0;
   }
-
+  .location-btn{
+    margin-bottom:10px;
+  }
   .reply-btn {
     position: relative;
     margin-right: 15px
   }
-
+  .name{
+    padding:10px 10px;
+    font-size: 20px;
+  }
   .author-title {
     padding: 10px;
-
-    .header-img {
-      display: inline-block;
-      vertical-align: top;
-    }
   }
-
-  .icon-btn {
-    width: 30%;
-    padding: 0 !important;
-    float: right;
+  .reply-input
+  {
+    style.padding:8px 8px;
+    border:2px,solid blue;
   }
-
-
-  .reply-box {
-    margin: 10px 0 0 50px;
-    background-color: #efefef
-  }
-
 </style>

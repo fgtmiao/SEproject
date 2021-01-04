@@ -81,7 +81,7 @@
           let pos = position.split(",");
           let x=pos[0];
           let y=pos[1];
-          ctx.clearRect(0,0,canvas.width,canvas.height);
+          // ctx.clearRect(0,0,canvas.width,canvas.height);
           ctx.strokeStyle = '#ff0000';
           ctx.lineWidth = 2;
           console.log("drawing");
