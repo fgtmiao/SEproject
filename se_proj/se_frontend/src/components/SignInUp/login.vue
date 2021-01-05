@@ -23,6 +23,7 @@
 <script>
   import Qs from 'qs'
   import axios from 'axios'
+  import crypto from 'crypto'
   export default {
     data() {
       var checkUsername = (rule, value, callback) => {
@@ -97,11 +98,16 @@
       signIn(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            //            
+            //前端加密
+            var md5 = crypto.createHash("md5")
+            md5.update(this.ruleForm.pass)//this.pw2这是你要加密的密码
+            var pw = md5.digest('hex')
+            console.log(pw)
             var datas = {
               'type': 'signin',
               'user_name': this.ruleForm.username,
-              'password': this.ruleForm.pass
+              // 'password': this.ruleForm.pass
+              'password':pw,
             };
             var params = Qs.stringify(datas);
             let _this = this;

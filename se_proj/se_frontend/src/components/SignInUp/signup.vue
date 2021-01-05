@@ -30,6 +30,7 @@
 <script>
   import Qs from 'qs'
   import axios from "axios"
+  import crypto from 'crypto'
   export default {
     data() {
       var checkUsername = (rule, value, callback) => {
@@ -132,11 +133,17 @@
             //send post
             console.log("注册账号和密码为")
             console.log(this.ruleForm.username)
-            console.log(this.ruleForm.pass)
+            
+            //在此处进行加密算法
+            var md5 = crypto.createHash("md5")
+            md5.update(this.ruleForm.pass)//this.pw2这是你要加密的密码
+            var pw = md5.digest('hex')
+            console.log(pw)
             var datas = {
               'type': 'signup',
               'user_name': this.ruleForm.username,
-              'password': this.ruleForm.pass
+              // 'password': this.ruleForm.pass
+              'password':pw,
             };
             var params = Qs.stringify(datas);
             let _this = this;
@@ -144,7 +151,7 @@
               // url: 'http://8.131.74.16/index',
               url: 'index',
               method: 'post',
-              data: params //开始回调地狱
+              data: params
             }).then((res) => {
               console.log("res from server")
               console.log(res)
