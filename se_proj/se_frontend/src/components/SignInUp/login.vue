@@ -30,14 +30,10 @@
         if (!value) {
           callback(new Error('用户名不能为空'));
         } else {
-          var pwdRegex = new RegExp('[0-9a-zA-Z]{6,20}');
+          var pwdRegex = new RegExp('^[a-zA-Z0-9_\u4e00-\u9fa5]+$');
           if (!pwdRegex.test(value)) {
-            callback(new Error("用户名需要为包括英文或数字的6～20位字符串"));
+            callback(new Error("用户名用户名只支持为汉字英文数字下划线！"));
           }
-          // else if(this.ruleForm.username !== '')
-          // {
-          //   this.$refs.ruleForm.validateField('username');
-          // }
           callback();
         }
       };

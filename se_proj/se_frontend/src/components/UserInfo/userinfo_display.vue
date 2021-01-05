@@ -126,7 +126,6 @@
 
       //上传头像
       handleBeforeUpload(file) {
-        console.log("handleBeforeUpload");
         if (!(file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/jpg' || file.type ===
             'image/jpeg')) {
           this.$notify.warning({
@@ -141,20 +140,24 @@
             message: '图片大小必须小于2M'
           })
         }
-
         let fd = new FormData();
         fd.append("image", file); //传文件
         fd.append('type', 'change_user_fig');
         fd.append('jwt', localStorage.getItem('token'));
-        console.log("before axios");
+        console.log("before upload avatar");
         axios({
           url: "userinfo",
           method: "post",
           data: fd,
         }).then((res) => {
-          console.log("uploadresis", res);
-          dialogVisible2 = false;
-          dialogVisible = false;
+          console.log("upload res is", res);
+          this.dialogVisible2 = false;
+          this.dialogVisible = false;         
+          this.$message({
+          type: 'success',
+          message: '上传成功'
+          });
+          this.$router.go(0);  
         }).catch((err) => {
           console.log(err);
         })
