@@ -32,7 +32,7 @@
       </div>
 
 
-      <el-select v-model="value" multiple filterable allow-create default-first-option placeholder="请选择或输入动物种类">
+      <el-select v-model="value" placeholder="请选择或输入动物种类">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select>
@@ -93,6 +93,9 @@
         }, {
           value: '鱼',
           label: '鱼'
+        }, {
+          value: '其他',
+          label: '其他'
         }],
         value: [],
         position: {
