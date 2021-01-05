@@ -3,11 +3,11 @@
 
     <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="signup-ruleForm">
       <el-form-item label="用户名" prop="username">
-        <el-input type="username" v-model="ruleForm.username" placeholder="用户名为6～20位数字或字母" autocomplete="off">
+        <el-input type="username" v-model="ruleForm.username" placeholder="用户名支持数字字母汉字下划线" autocomplete="off">
         </el-input>
       </el-form-item>
       <el-form-item label="密码" prop="pass">
-        <el-input type="password" v-model="ruleForm.pass" placeholder="必须是8～30位的字母或数组" autocomplete="off"></el-input>
+        <el-input type="password" v-model="ruleForm.pass" placeholder="必须是8～30位的字母或数字" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="确认密码" prop="checkPass">
         <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
