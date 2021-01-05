@@ -27,8 +27,7 @@ from django.views.generic.base import TemplateView
 from se_backend import views
 
 urlpatterns = [
-    path('index', views.requset_index, name='index'),                               # 平台首页
-    path('userinfo', views.requset_userinfo, name='userinfo'),                      # 个人主页界面
-    path('baike_content', views.requset_baike_content, name='baike_content'),       # 燕园动物小百科详细页面
-    # path(r'', TemplateView.as_view(template_name="index.html")),
+    path('api/index', views.requset_index, name='index'),                               # 平台首页
+    path('api/userinfo', views.requset_userinfo, name='userinfo'),                      # 个人主页界面
+    path('api/baike_content', views.requset_baike_content, name='baike_content'),       # 燕园动物小百科详细页面
 ]
