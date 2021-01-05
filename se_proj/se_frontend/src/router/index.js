@@ -5,6 +5,7 @@ import Login from '@/components/SignInUp/login.vue'
 import SignUp from '@/components/SignInUp/signup.vue'
 
 import MainPosts from '@/components/PostBrowse/MainPosts.vue'
+import connect from '@/components/PostBrowse/connect.vue'
 import PostUpload from '@/components/PostUpload/Upload.vue'
 import PostDetail from '@/components/PostDetail/Post.vue'
 
@@ -84,6 +85,14 @@ export default new Router({
         requireauth: true, // 判断是否需要登录
       },
       component: searchRes
+    },
+    {
+      path: '/connect',
+      name: 'connect',
+      meta: {
+        requireauth: true, // 判断是否需要登录
+      },
+      component: connect
     },
   ]
 })

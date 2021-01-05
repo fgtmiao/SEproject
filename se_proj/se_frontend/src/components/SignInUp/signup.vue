@@ -35,10 +35,12 @@
       var checkUsername = (rule, value, callback) => {
         if (!value) {
           return callback(new Error('用户名不能为空'));
-        } else {
-          var nickRegex = new RegExp('[0-9a-zA-Z]{6,20}');
+        } 
+        else {
+          //去除用户名限制
+          var nickRegex = new RegExp('^[a-zA-Z0-9_\u4e00-\u9fa5]+$');
           if (!nickRegex.test(value)) {
-            callback(new Error("用户名需要为包括英文或数字的6～20位字符串"));
+            callback(new Error("用户名只支持为汉字英文数字下划线！"));
           }
           //  check重名
           callback();

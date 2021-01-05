@@ -50,6 +50,7 @@
 
           <el-menu-item index="4"><i class="el-icon-user"></i>我的</el-menu-item>
           <el-menu-item index="5"><i class="el-icon-circle-plus-outline"></i>发帖</el-menu-item>
+          <el-menu-item index="6"><i class="el-icon-s-promotion"></i>开发者</el-menu-item>
         </el-menu>
 
       </div>
@@ -237,6 +238,11 @@
       },
       handleSelect(key, keyPath) {
         console.log(key);
+        if(key=='6'){
+            this.$router.push({
+            path: '/connect'
+          })
+        }
         if (key == "5") {
           this.$router.push({
             path: '/postupload',
