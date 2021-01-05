@@ -148,9 +148,6 @@
         console.log("signup")
         this.$router.push({
           path: 'signup',
-          query: {
-            test: "asdasd"
-          }
         })
       },
       submitUserLogin() {
