@@ -14,7 +14,7 @@ from se_backend import index, userinfo
 
 
 @csrf_exempt
-def requset_index(request):
+def request_index(request):
     if 'type' not in request.POST:
         return HttpResponse('Hello World from page index!')
 
@@ -54,7 +54,7 @@ def requset_index(request):
 
 
 @csrf_exempt
-def requset_userinfo(request):
+def request_userinfo(request):
     if 'type' not in request.POST:
         return HttpResponse('Hello World from page userinfo!')
 
@@ -71,9 +71,8 @@ def requset_userinfo(request):
     return JsonResponse({'succ': False, 'errmsg': 'authentication failed'})
 
 
-
 @csrf_exempt
-def requset_baike_content(request):
+def request_baike_content(request):
     return HttpResponse('Hello World from page baike_content!')
 
 
