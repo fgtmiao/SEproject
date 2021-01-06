@@ -14,11 +14,8 @@ from django.http import JsonResponse
 from django.forms.models import model_to_dict
 from django.db.models import F
 from se_backend.models import User, Post, Reply
-from se_proj.settings import ALLOWED_HOSTS
+from se_proj.settings import ALLOWED_HOSTS, image_base_folder
 from se_backend import userinfo
-
-
-image_base_folder = '/data/SEproject/images'
 
 
 def build_jwt_token(secret, user_name):
