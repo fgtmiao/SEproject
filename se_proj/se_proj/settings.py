@@ -26,8 +26,8 @@ SECRET_KEY = 'q^9*qplau1@2jtabj(m+ek(bb@zkbsoc&bs89yp1kvl3+g9%h('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['8.131.74.16', 'localhost', '127.0.0.1']
+image_base_folder = '/data/SEproject/images'
 
 # Application definition
 
