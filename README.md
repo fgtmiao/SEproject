@@ -1,5 +1,6 @@
 # SEproject
 for 软件工程项目
+项目地址：http://8.131.74.16/
 ## 前端修改
 * 前端本地运行方式：进入se_frontend文件夹，执行命令npm run dev打开浏览器查看对应端口即可，初次运行可能需要npm run install等
 * 前端编写方法：在se_frontend/src/components中添加页面并在se_frontend/router/index.js中添加路由
